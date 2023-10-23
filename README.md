@@ -100,7 +100,8 @@ void initFBDeferredDeeplinks() async {
 
  How documented on Facebook [docs](https://developers.facebook.com/docs/app-ads/deep-linking/), starting from v5.0.0 of the SDK, they introduce a flag for disabling automatic SDK initialization to be GDPR compliant.
  It means that you should collect user consent before you use call the method `initFBLinks()` of this plugin and save the user choice. Moreover, you should give the user a chance to revoke their consent in the future.
- Please keep in mind that this plugin uses `FacebookSDK.setAutoInitEnabled(true)` in Android and `Settings.isAutoInitEnabled = true` in iOS by default, so the consent must be granted in your Dart code before you call `FlutterFacebookAppLinks.initFBLinks()`.
+ ~~Please keep in mind that this plugin uses `FacebookSDK.setAutoInitEnabled(true)` in Android and `Settings.isAutoInitEnabled = true` in iOS by default, so the consent must be granted in your Dart code before you call `FlutterFacebookAppLinks.initFBLinks()`.~~
+ Use the `consentProvided` and `consentRevoked` methods to manage consent once you have collected it.
 
 
  ### Testing deferred deep links

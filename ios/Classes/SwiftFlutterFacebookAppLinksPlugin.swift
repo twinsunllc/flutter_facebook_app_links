@@ -49,6 +49,14 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     
     switch call.method {
+        case "consentProvided":
+            Settings.shared.isAutoLogAppEventsEnabled = true
+            ApplicationDelegate.shared.initializeSDK()
+            result(nil)
+        case "consentRevoked":
+            Settings.shared.isAutoLogAppEventsEnabled = false
+            ApplicationDelegate.shared.initializeSDK()
+            result(nil)
         case "getPlatformVersion":
             handleGetPlatformVersion(call, result: result)
             break

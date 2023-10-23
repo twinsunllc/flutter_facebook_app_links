@@ -64,6 +64,16 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
     } else if(call.method.equals("getDeepLinkUrl")){
 
       result.success(deeplinkUrl);
+    } else if (call.method.equals("consentProvided")) {
+      FacebookSdk.setAutoLogAppEventsEnabled(true);
+      FacebookSdk.setAutoInitEnabled(true);
+      FacebookSdk.fullyInitialize();
+      result.success("");
+    } else if (call.method.equals("consentRevoked")) {
+      FacebookSdk.setAutoLogAppEventsEnabled(false);
+      FacebookSdk.setAutoInitEnabled(false);
+      FacebookSdk.fullyInitialize();
+      result.success("");
     } else {
       result.notImplemented();
     }
@@ -98,7 +108,7 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
 
     // Get user consent
     FacebookSdk.setAutoLogAppEventsEnabled(false);
-    FacebookSdk.setAutoInitEnabled(true);
+    // FacebookSdk.setAutoInitEnabled(true);
     FacebookSdk.fullyInitialize();
 
     AppLinkData.fetchDeferredAppLinkData(mContext,
