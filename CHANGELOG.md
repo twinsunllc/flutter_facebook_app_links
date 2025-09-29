@@ -1,3 +1,52 @@
+## 3.1.0
+* Android: MinSDK 21, CompileSDK 35
+* Android Facebook SDK 18.1.3
+* Update example folder
+
+## 3.0.8
+* FBSDKCoreKit 17.4- -> 18.0
+
+## 3.0.3
+* FBSDKCoreKit 16.0- -> 17.4
+* Added methos activateSDK()
+
+## 3.0.2
+* initFBLinks() now returns, for Android, an empty String when the deferred link is not available. 
+Before this update, the method could return a null value in case of errors.
+For iOS use method getDeepLink().
+
+## 3.0.1+8
+* FBSDKCoreKit 15.1- -> 16.3
+* Android Facebook SDK -> 16.3
+
+## 3.0.1+7
+* FBSDKCoreKit 15.1- -> 16.0 
+
+## 3.0.1+6
+* FBSDKCoreKit 14.1.0- -> 15.1 
+
+## 3.0.0+5
+* README updated
+
+## 3.0.0+4
+* FBSDKCoreKit 14.1.0
+* Code refactoring
+* BREAKING CHANGE: in Android the method initFBLinks() will return a String with the url of the deferred deep link (empty otherwise). 
+For iOS it is necessary to call getDeepLink() after initFBLinks().
+
+## 2.0.0+2
+
+* Null safety
+
+## 1.1.1+4
+
+* Updated FBSDK v7 to v9
+
+## 1.1.1+3
+
+* Updated FBSDK v5 to v7
+* Added MIT License
+
 ## 1.1.0+1
 
 * Fixed an error caused from iterating on a null data.
