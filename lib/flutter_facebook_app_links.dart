@@ -44,4 +44,18 @@ class FlutterFacebookAppLinks {
   static Future<dynamic> consentRevoked() {
     return _channel.invokeMethod('consentRevoked');
   }
+
+  /// Sets the advertiser tracking enabled status for Facebook SDK.
+  ///
+  /// This method controls whether the Facebook SDK reports advertiser tracking
+  /// as enabled to Facebook servers. Call this after obtaining ATT permission
+  /// on iOS and before calling consentProvided() or consentRevoked().
+  ///
+  /// On iOS: Controls Settings.shared.isAdvertiserTrackingEnabled
+  /// On Android: Controls FacebookSdk.setAdvertiserIDCollectionEnabled
+  ///
+  /// [enabled] - Whether advertiser tracking should be enabled based on user consent
+  static Future<void> setAdvertiserTrackingEnabled(bool enabled) async {
+    await _channel.invokeMethod('setAdvertiserTrackingEnabled', {'enabled': enabled});
+  }
 }

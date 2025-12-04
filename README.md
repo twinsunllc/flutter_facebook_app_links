@@ -33,7 +33,20 @@ If you want to delay event collection (e.g. to obtain GDPR consent), add the fol
            android:value="false"/>
 ```
 
-Then after consent is obtained, call `FlutterFacebookAppLinks.consentProvided()` or `FlutterFacebookAppLinks.consentRevoked()` as necessary.
+Then after consent is obtained, call the following methods in order:
+
+**For iOS (with ATT permission):**
+1. Request ATT permission using iOS `ATTrackingManager`
+2. Call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent
+3. Call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`
+
+**For Android:**
+1. Call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent
+2. Call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`
+
+The `setAdvertiserTrackingEnabled()` method controls:
+- **iOS**: Settings.shared.isAdvertiserTrackingEnabled (Facebook tracking reporting)
+- **Android**: FacebookSdk.setAdvertiserIDCollectionEnabled (advertiser ID collection)
 
 ### Configure iOS
 
@@ -75,7 +88,7 @@ Read through the "[Getting Started with App Events for iOS](https://developers.f
 <string>[APP_NAME]</string>
 ```
 
-- After obtaining ATT permission, call call `FlutterFacebookAppLinks.consentProvided()` or `FlutterFacebookAppLinks.consentRevoked()` as necessary.
+- After obtaining ATT permission, follow the same pattern as Android above: call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent, then call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`.
 
 ## About Facebook App Links
 
