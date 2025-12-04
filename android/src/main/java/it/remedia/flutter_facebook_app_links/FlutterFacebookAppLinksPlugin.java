@@ -80,6 +80,14 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       FacebookSdk.setAutoInitEnabled(false);
       FacebookSdk.fullyInitialize();
       result.success("");
+    } else if (call.method.equals("setAdvertiserTrackingEnabled")) {
+      Boolean enabled = call.argument("enabled");
+      if (enabled != null) {
+        FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
+        result.success(null);
+      } else {
+        result.error("INVALID_ARGUMENTS", "Expected boolean 'enabled' parameter", null);
+      }
     } else {
       result.notImplemented();
     }
