@@ -29,6 +29,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     case "setAdvertiserTrackingEnabled":
       if let arguments = call.arguments as? [String: Any],
          let enabled = arguments["enabled"] as? Bool {
+        // Ensure SDK is initialized before setting tracking preferences
+        ApplicationDelegate.shared.initializeSDK()
         Settings.shared.isAdvertiserTrackingEnabled = enabled
         result(nil)
       } else {
