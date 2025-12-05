@@ -55,6 +55,9 @@ class FlutterFacebookAppLinks {
   /// On Android: Controls FacebookSdk.setAdvertiserIDCollectionEnabled
   ///
   /// [enabled] - Whether advertiser tracking should be enabled based on user consent
+  ///
+  /// Throws [PlatformException] if the platform-specific call fails, for example
+  /// if the Facebook SDK is not properly initialized or if there are permission issues
   static Future<void> setAdvertiserTrackingEnabled(bool enabled) async {
     await _channel.invokeMethod('setAdvertiserTrackingEnabled', {'enabled': enabled});
   }
