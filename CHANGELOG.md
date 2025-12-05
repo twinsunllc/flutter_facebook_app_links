@@ -1,3 +1,10 @@
+## 1.2.0+1
+
+* Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade.
+* iOS: Controls `Settings.shared.isAdvertiserTrackingEnabled` for Facebook tracking reporting
+* Android: Controls `FacebookSdk.setAdvertiserIDCollectionEnabled` for advertiser ID collection
+* Updated README with proper method call order and platform-specific semantics
+
 ## 1.1.0+1
 
 * Fixed an error caused from iterating on a null data.
