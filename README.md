@@ -44,9 +44,24 @@ Then after consent is obtained, call the following methods in order:
 1. Call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent
 2. Call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`
 
-The `setAdvertiserTrackingEnabled()` method controls:
-- **iOS**: Settings.shared.isAdvertiserTrackingEnabled (Facebook tracking reporting)
-- **Android**: FacebookSdk.setAdvertiserIDCollectionEnabled (advertiser ID collection)
+## Platform-Specific Behavior
+
+The `setAdvertiserTrackingEnabled()` method has platform-specific implementations with different semantics:
+
+### iOS
+- **API**: `Settings.shared.isAdvertiserTrackingEnabled`
+- **Behavior**: Controls whether the SDK reports advertiser tracking as enabled to Facebook
+- **Purpose**: Required for proper Facebook attribution after ATT permission
+- **Timing**: Set after obtaining ATT permission from iOS, before `consentProvided()`
+
+### Android
+- **API**: `FacebookSdk.setAdvertiserIDCollectionEnabled`
+- **Behavior**: Controls whether the SDK collects the advertising ID
+- **Purpose**: Enables/disables advertising ID collection based on user consent
+- **Timing**: Set before `consentProvided()` to respect user privacy settings
+
+### ATT Compliance Note
+Both iOS and Android implementations should be set based on the user's App Tracking Transparency (ATT) consent status on iOS, or equivalent privacy settings on Android. This ensures proper GDPR compliance and Facebook attribution functionality.
 
 ### Configure iOS
 

@@ -47,13 +47,21 @@ class FlutterFacebookAppLinks {
 
   /// Sets the advertiser tracking enabled status for Facebook SDK.
   ///
-  /// This method controls whether the Facebook SDK reports advertiser tracking
-  /// as enabled to Facebook servers. It automatically initializes the Facebook SDK
-  /// if not already initialized. Call this after obtaining ATT permission on iOS
-  /// and before calling consentProvided() or consentRevoked().
+  /// This method controls advertiser tracking permissions with platform-specific behavior:
   ///
-  /// On iOS: Controls Settings.shared.isAdvertiserTrackingEnabled
-  /// On Android: Controls FacebookSdk.setAdvertiserIDCollectionEnabled
+  /// **iOS**: Controls `Settings.shared.isAdvertiserTrackingEnabled`
+  /// - Determines whether the SDK reports tracking as enabled to Facebook
+  /// - Required for proper attribution after ATT permission approval
+  /// - Set after obtaining user consent via App Tracking Transparency
+  ///
+  /// **Android**: Controls `FacebookSdk.setAdvertiserIDCollectionEnabled`
+  /// - Enables/disables collection of the advertising ID by the SDK
+  /// - Controls privacy-sensitive advertising identifier usage
+  /// - Set based on user privacy preferences
+  ///
+  /// This method automatically initializes the Facebook SDK if not already initialized.
+  /// Call this after obtaining ATT permission on iOS and before calling consentProvided()
+  /// or consentRevoked().
   ///
   /// [enabled] - Whether advertiser tracking should be enabled based on user consent
   ///
