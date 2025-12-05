@@ -4,6 +4,8 @@
 * iOS: Controls `Settings.shared.isAdvertiserTrackingEnabled` for Facebook tracking reporting
 * Android: Controls `FacebookSdk.setAdvertiserIDCollectionEnabled` for advertiser ID collection
 * Updated README with proper method call order and platform-specific semantics
+* Enhanced example app to demonstrate ATT permission flow and tracking consent patterns
+* Added unit tests for new `setAdvertiserTrackingEnabled()` method with error handling
 
 ## 1.1.0+1
 
