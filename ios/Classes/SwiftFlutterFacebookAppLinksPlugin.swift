@@ -26,6 +26,18 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       Settings.shared.isAutoLogAppEventsEnabled = false
       ApplicationDelegate.shared.initializeSDK()
       result(nil)
+    case "setAdvertiserTrackingEnabled":
+      if let arguments = call.arguments as? [String: Any],
+         let enabled = arguments["enabled"] as? Bool {
+        // Ensure SDK is initialized before setting tracking preferences
+        ApplicationDelegate.shared.initializeSDK()
+        Settings.shared.isAdvertiserTrackingEnabled = enabled
+        result(nil)
+      } else {
+        result(FlutterError(code: "INVALID_ARGUMENTS",
+                          message: "Expected boolean 'enabled' parameter",
+                          details: nil))
+      }
     case "getPlatformVersion":
       handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
