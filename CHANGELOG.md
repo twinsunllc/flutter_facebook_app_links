@@ -1,7 +1,7 @@
 ## 3.2.0
 
 * **[Migration Guide]**: Major merge of upstream Mapk26/flutter_facebook_app_links master branch
-  * **From**: Your fork's 1.2.0+1 customizations (ATT/privacy features)  
+  * **From**: Your fork's 1.2.0+1 customizations (ATT/privacy features)
   * **To**: Upstream's Facebook SDK 18.0.0 (StoreKit2 IAP support) + Flutter 3.x modernizations
   * **What's Preserved**: All privacy/compliance methods from your fork (v1.2.0+1)
     - `setAdvertiserTrackingEnabled()` - ATT compliance for iOS privacy
@@ -17,7 +17,7 @@
 * Merged upstream Mapk26 master branch - Facebook SDK upgraded to 18.0.0
 * Improved support for in-app purchase events for Original StoreKit APIs and StoreKit 2 APIs
 * Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade
-* **iOS**: Controls `Settings.shared.isAdvertiserTrackingEnabled` - determines SDK tracking reporting to Facebook (required for attribution)  
+* **iOS**: Controls `Settings.shared.isAdvertiserTrackingEnabled` - determines SDK tracking reporting to Facebook (required for attribution)
 * **Android**: Controls `FacebookSdk.setAdvertiserIDCollectionEnabled` - enables/disables advertising ID collection
 * Added platform-specific semantic explanations for proper ATT compliance and privacy handling
 * Updated README with proper method call order and platform-specific semantics
@@ -25,21 +25,30 @@
 * Added unit tests for new `setAdvertiserTrackingEnabled()` method with error handling
 * Android: Updated to Facebook SDK 18.1.3, MinSDK 21, CompileSDK 35
 * Modernized plugin configuration with explicit platform declarations
+* Added Facebook event logging functionality for analytics and conversion tracking
+* New `logEvent()` method to log custom events with parameters
+* New `logPurchaseEvent()` convenience method for tracking purchases with amount and currency
+* New `logCompleteRegistration()` convenience method for tracking user registrations
+* Support for standard Facebook event names and custom events
+* Full parameter support for event metadata (content IDs, values, currencies, etc.)
+* **iOS**: Event logging using `AppEvents.shared.logEvent()` from FBSDKCoreKit
+* **Android**: Event logging using `AppEventsLogger` from Facebook SDK
+* Events require prior SDK initialization via `consentProvided()` for privacy compliance
 
-## 3.1.0
+## 3.1.0
 * Android: MinSDK 21, CompileSDK 35
 * Android Facebook SDK 18.1.3
 * Update example folder
 
-## 3.0.8
+## 3.0.8
 * FBSDKCoreKit 17.4- -> 18.0
 
-## 3.0.3
+## 3.0.3
 * FBSDKCoreKit 16.0- -> 17.4
 * Added methos activateSDK()
 
-## 3.0.2
-* initFBLinks() now returns, for Android, an empty String when the deferred link is not available. 
+## 3.0.2
+* initFBLinks() now returns, for Android, an empty String when the deferred link is not available.
 Before this update, the method could return a null value in case of errors.
 For iOS use method getDeepLink().
 
@@ -48,10 +57,10 @@ For iOS use method getDeepLink().
 * Android Facebook SDK -> 16.3
 
 ## 3.0.1+7
-* FBSDKCoreKit 15.1- -> 16.0 
+* FBSDKCoreKit 15.1- -> 16.0
 
 ## 3.0.1+6
-* FBSDKCoreKit 14.1.0- -> 15.1 
+* FBSDKCoreKit 14.1.0- -> 15.1
 
 ## 3.0.0+5
 * README updated
@@ -59,7 +68,7 @@ For iOS use method getDeepLink().
 ## 3.0.0+4
 * FBSDKCoreKit 14.1.0
 * Code refactoring
-* BREAKING CHANGE: in Android the method initFBLinks() will return a String with the url of the deferred deep link (empty otherwise). 
+* BREAKING CHANGE: in Android the method initFBLinks() will return a String with the url of the deferred deep link (empty otherwise).
 For iOS it is necessary to call getDeepLink() after initFBLinks().
 
 ## 2.0.0+2
