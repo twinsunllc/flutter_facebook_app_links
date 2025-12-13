@@ -1,3 +1,16 @@
+## 1.3.0
+
+* Added Facebook event logging functionality for analytics and conversion tracking
+* New `logEvent()` method to log custom events with parameters
+* New `logPurchaseEvent()` convenience method for tracking purchases with amount and currency
+* New `logCompleteRegistration()` convenience method for tracking user registrations
+* Support for standard Facebook event names and custom events
+* Full parameter support for event metadata (content IDs, values, currencies, etc.)
+* **iOS**: Implemented using `AppEvents.shared.logEvent()` from FBSDKCoreKit
+* **Android**: Implemented using `AppEventsLogger` from Facebook SDK
+* Enhanced example app with event logging demonstrations
+* Events require prior SDK initialization via `consentProvided()` for privacy compliance
+
 ## 1.2.0+1
 
 * Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade.

@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
   String _deepLinkStatus = 'Waiting for deep link...';
   String _consentStatus = 'Not initialized';
   String _trackingStatus = 'Unknown';
+  String _eventLoggingStatus = 'No events logged yet';
 
   @override
   void initState() {
@@ -138,6 +139,64 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> logCustomEvent() async {
+    try {
+      // Log a custom event with parameters
+      await FlutterFacebookAppLinks.logEvent('trial_started', {
+        'trial_type': 'premium',
+        'trial_duration': 7,
+        '_valueToSum': 9.99,
+        'fb_currency': 'USD',
+      });
+
+      setState(() {
+        _eventLoggingStatus = 'Custom event logged: trial_started with parameters';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging custom event: $e';
+      });
+    }
+  }
+
+  Future<void> logPurchase() async {
+    try {
+      // Log a purchase event
+      await FlutterFacebookAppLinks.logPurchaseEvent(
+        49.99,
+        'USD',
+        {
+          'fb_content_id': 'product_12345',
+          'fb_content_type': 'product',
+          'fb_num_items': 2,
+        },
+      );
+
+      setState(() {
+        _eventLoggingStatus = 'Purchase event logged: \$49.99 USD';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging purchase: $e';
+      });
+    }
+  }
+
+  Future<void> logRegistration() async {
+    try {
+      // Log a registration completion event
+      await FlutterFacebookAppLinks.logCompleteRegistration('email');
+
+      setState(() {
+        _eventLoggingStatus = 'Registration event logged with method: email';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging registration: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -173,7 +232,21 @@ class _MyAppState extends State<MyApp> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(_deepLinkStatus),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
+                Divider(),
+                SizedBox(height: 20),
+                Text(
+                  'Event Logging:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(height: 10),
+                Text(_eventLoggingStatus),
+                SizedBox(height: 20),
+                Text(
+                  'Setup & Configuration:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: requestTrackingConsent,
                   child: Text('Request ATT & Initialize Facebook'),
@@ -189,6 +262,35 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Refresh Deep Link Data'),
                 ),
                 SizedBox(height: 20),
+                Text(
+                  'Event Logging Examples:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logCustomEvent,
+                  child: Text('Log Custom Event (Trial Started)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logPurchase,
+                  child: Text('Log Purchase Event (\$49.99)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logRegistration,
+                  child: Text('Log Registration Event'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -200,7 +302,12 @@ class _MyAppState extends State<MyApp> {
                     '• On iOS: Button triggers ATT permission → sets advertiser tracking → initializes SDK\n'
                     '• On Android: Button enables tracking → initializes SDK\n'
                     '• Deep link data may take a few seconds to load\n'
-                    '• Toggle button demonstrates changing tracking status after initialization',
+                    '• Toggle button demonstrates changing tracking status after initialization\n\n'
+                    'Event Logging:\n'
+                    '• Initialize Facebook SDK first (Request ATT button)\n'
+                    '• Green buttons demonstrate different event types\n'
+                    '• Events are sent to Facebook Analytics\n'
+                    '• Check Facebook Events Manager to verify events',
                     style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                   ),
                 ),
