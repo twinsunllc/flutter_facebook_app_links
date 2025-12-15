@@ -1,5 +1,5 @@
 group = 'it.remedia.flutter_facebook_app_links'
-version = '3.0.5'
+version = '3.2.0'
 
 buildscript {
     repositories {

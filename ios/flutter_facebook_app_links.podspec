@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_facebook_app_links'
-  s.version          = '3.0.3'
+  s.version          = '3.2.0'
   s.summary          = 'A Flutter plugin to catch deferred deep links from Facebbok ads with FB App Links SDK.'
   s.description      = <<-DESC
 Flutter plugin for Facebook App Links SDK
