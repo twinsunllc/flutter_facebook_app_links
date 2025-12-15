@@ -6,6 +6,23 @@ Flutter plugin for [Facebook App Links SDK](https://developers.facebook.com/docs
 
 First of all, if you don't have one already, you must first create an app at Facebook developers: https://developers.facebook.com/
 
+## System Prerequisites
+
+### Java Development Kit (JDK)
+- **Android Builds**: Java 11 is required for Android compilation
+- **Environment Variable**: `JAVA_HOME` should point to JDK 11 installation  
+- **Android Gradle Plugin**: AGP 8.x requires JDK 11 (configured in `android/build.gradle`)
+- **Verification**: Run `java -version` to confirm JDK 11.x is active
+
+### iOS Development
+- **Xcode**: Version 12.0+ for Swift 5.0 compatibility
+- **iOS Deployment Target**: iOS 11.0 minimum (optimized for iOS 12.0+)
+
+### Flutter
+- **Flutter SDK**: 3.2.2+ (Flutter 3.x required for Facebook SDK 18)
+- **Dart SDK**: 3.2.2+ (nullable safety and modern language features)
+
+
 ## ⚠️ CRITICAL: Default iOS Tracking Behavior (Affects Facebook Attribution)
 
 **Facebook advertising tracking is DISABLED by default on iOS.** If you do not implement the proper ATT permission flow and call `setAdvertiserTrackingEnabled(true)`, Facebook attribution (including StoreKit2 purchase events) will not work.
