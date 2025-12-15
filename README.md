@@ -6,6 +6,28 @@ Flutter plugin for [Facebook App Links SDK](https://developers.facebook.com/docs
 
 First of all, if you don't have one already, you must first create an app at Facebook developers: https://developers.facebook.com/
 
+## ⚠️ CRITICAL: Default iOS Tracking Behavior (Affects Facebook Attribution)
+
+**Facebook advertising tracking is DISABLED by default on iOS.** If you do not implement the proper ATT permission flow and call `setAdvertiserTrackingEnabled(true)`, Facebook attribution (including StoreKit2 purchase events) will not work.
+
+### Required iOS Initialization for Attribution
+
+```dart
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+
+// In your app's main initialization:
+if (Platform.isIOS) {
+  // 1. Request ATT permission
+  var status = await AppTrackingTransparency.requestTrackingAuthorization();
+  
+  // 2. Enable Facebook tracking after consent (REQUIRED for attribution!)
+  if (status == TrackingStatus.authorized) {
+    await FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true);  // <-- THIS IS CRITICAL
+    await FlutterFacebookAppLinks.consentProvided();
+  }
+}
+
+
 Get your app id (referred to as `[APP_ID]` below)
 
 ### Configure Android
