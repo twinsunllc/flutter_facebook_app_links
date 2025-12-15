@@ -37,10 +37,6 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-     
-    if (project.android.hasProperty('namespace')) {
-        namespace 'it.remedia.flutter_facebook_app_links'
-    }
 
     dependencies {
         implementation 'com.facebook.android:facebook-core:18.1.3'
