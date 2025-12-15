@@ -88,6 +88,16 @@ Both iOS and Android implementations should be set based on the user's App Track
 
 ### Configure iOS
 
+#### 📱 Additional Dependencies Required
+
+##### For iOS ATT Compliance
+Your app needs the `app_tracking_transparency` package to handle ATT permission requests:
+
+```yaml
+dependencies:
+  flutter_facebook_app_links: ^3.2.0
+  app_tracking_transparency: ^2.0.4  # Required for iOS ATT compliance
+
 For iOS configuration, you can follow the same instructions of the Flutter Facebook App Events plugin:
 Read through the "[Getting Started with App Events for iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios)" tutuorial and in particular, follow [step 4](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#plist-config) by opening `info.plist` "As Source Code" and add the following
 
