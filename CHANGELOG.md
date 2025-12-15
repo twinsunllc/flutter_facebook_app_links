@@ -1,5 +1,19 @@
 ## 3.2.0
 
+* **[Migration Guide]**: Major merge of upstream Mapk26/flutter_facebook_app_links master branch
+  * **From**: Your fork's 1.2.0+1 customizations (ATT/privacy features)  
+  * **To**: Upstream's Facebook SDK 18.0.0 (StoreKit2 IAP support) + Flutter 3.x modernizations
+  * **What's Preserved**: All privacy/compliance methods from your fork (v1.2.0+1)
+    - `setAdvertiserTrackingEnabled()` - ATT compliance for iOS privacy
+    - `consentProvided()` / `consentRevoked()` - GDPR compliance
+    - Enhanced example app with ATT flow demonstrations
+  * **What's Added**: Facebook SDK 18.0.0 features
+    - StoreKit2 purchase event logging support (fixes attribution drop-off)
+    - Modern Flutter 3.x plugin architecture
+    - `activateSDK()` method for explicit SDK initialization
+  * **API Compatibility**: 100% backward compatible - existing Flutter code continues working
+  * **Breaking Changes**: None - all APIs preserved and enhanced
+
 * Merged upstream Mapk26 master branch - Facebook SDK upgraded to 18.0.0
 * Improved support for in-app purchase events for Original StoreKit APIs and StoreKit 2 APIs
 * Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade

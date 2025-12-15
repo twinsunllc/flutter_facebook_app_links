@@ -16,6 +16,7 @@ Read through the "[Getting Started with App Events for Android](https://develope
 configure inside android/app/main/res/values/strings.xml the above values (without square brackets):
 ```xml
 <string name="facebook_app_id">[your_app_id]</string>
+<!-- Find your client token at: Facebook App Dashboard > Settings > Advanced > Security -->
 <string name="facebook_client_token">[your_client_token]</string>
 ```
 
@@ -124,7 +125,7 @@ void initFBDeferredDeeplinks() async {
 
     /// do what you need with the deeplink...
     /// ...
-  }catche(e){
+  }catch(e){
     /// in case of error...
   }
 }
