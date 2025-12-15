@@ -76,7 +76,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
         ApplicationDelegate.shared.initializeSDK()
-        result(nil)
+        result("")
     case "getDeepLinkUrl":    
         result(deepLinkUrl)
     case "activateApp":
