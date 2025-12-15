@@ -92,59 +92,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     result("iOS " + UIDevice.current.systemVersion)
   }
 
-  private func handleFBAppLinks(_: FlutterMethodCall, result: @escaping FlutterResult) {
-    print("FB APP LINKS Starting ")
-
-    AppLinkUtility.fetchDeferredAppLink { url, error in
-      if let error = error {
-        print("Received error while fetching deferred app link %@", error)
-        result(nil)
-      }
-
-      if let url = url {
-        print("FB APP LINKS getting url: ", String(url.absoluteString))
-
-        var mapData: [String: String?] = ["deeplink": url.absoluteString, "promotionalCode": nil]
-
-        if let code = AppLinkUtility.appInvitePromotionCode(from: url) {
-          print("promotional code " + String(code))
-          mapData["promotionalCode"] = code
-        } else { // nil
-        }
-
-        if #available(iOS 10, *) {
-          result(mapData)
-        } else {
-          result(mapData)
-        }
-      } else {
-        // no deep link received
-        result(nil)
-      }
-    }
-  }
-
-
   public func initializeSDK() {
     ApplicationDelegate.shared.initializeSDK()
-  }
-
-  private func handleGetDeepLinkUrl(_: FlutterMethodCall, result: @escaping FlutterResult) {
-    print("FB APP LINKS getDeepLinkUrl Starting ")
-
-    AppLinkUtility.fetchDeferredAppLink { url, error in
-      if let error = error {
-        print("Received error while fetching deferred app link %@", error)
-        result("")
-      }
-
-      if let url = url {
-        print("FB APP LINKS getDeepLinkUrl getting url: ", String(url.absoluteString))
-        result(url.absoluteString)
-      } else {
-        // no deep link received
-        result("")
-      }
-    }
   }
 }
