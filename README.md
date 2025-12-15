@@ -22,7 +22,6 @@ First of all, if you don't have one already, you must first create an app at Fac
 - **Flutter SDK**: 3.2.2+ (Flutter 3.x required for Facebook SDK 18)
 - **Dart SDK**: 3.2.2+ (nullable safety and modern language features)
 
-
 ## ⚠️ CRITICAL: Default iOS Tracking Behavior (Affects Facebook Attribution)
 
 **Facebook advertising tracking is DISABLED by default on iOS.** If you do not implement the proper ATT permission flow and call `setAdvertiserTrackingEnabled(true)`, Facebook attribution (including StoreKit2 purchase events) will not work.
