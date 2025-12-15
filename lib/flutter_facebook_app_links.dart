@@ -10,17 +10,15 @@ class FlutterFacebookAppLinks {
     return version;
   }
 
-  static Future<dynamic> initFBLinks() async {
+  static Future<String> initFBLinks() async {
     try {
       var data = await _channel.invokeMethod('initFBLinks');
       debugPrint('Deferred FB Link: $data');
-
-      if (data == null) return null;
-      final Map<String, String> result = new Map.from(data);
-      return result;
+      return data ?? '';
     } catch (e) {
-      debugPrint("Error retrieving deferred deep link: $e");
-      return null;
+      debugPrint("Error initializing FlutterFacebookAppLinks: $e");
+
+      return '';
     }
   }
 

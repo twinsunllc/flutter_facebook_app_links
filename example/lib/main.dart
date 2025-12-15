@@ -87,15 +87,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDeepLink() async {
     try {
       // Initialize Facebook Deep Links
-      final deepLinkData = await FlutterFacebookAppLinks.initFBLinks();
+      final deepLinkUrl = await FlutterFacebookAppLinks.initFBLinks();
 
-      if (deepLinkData != null) {
-        final deeplink = deepLinkData['deeplink'];
-        final promoCode = deepLinkData['promotionalCode'];
+      if (deepLinkUrl.isNotEmpty) {
         setState(() {
           _deepLinkStatus = 'Deep link received:\n'
-              'URL: ${deeplink ?? 'null'}\n'
-              'Promo Code: ${promoCode ?? 'null'}';
+              'URL: $deepLinkUrl';
         });
       } else {
         setState(() {
