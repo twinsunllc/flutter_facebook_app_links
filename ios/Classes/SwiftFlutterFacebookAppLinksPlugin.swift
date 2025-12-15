@@ -2,54 +2,89 @@ import FBSDKCoreKit
 import Flutter
 import UIKit
 
+
 public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
-  // fileprivate var resulter: FlutterResult? = nil
+
+  var deepLinkUrl:String = ""
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "plugins.remedia.it/flutter_facebook_app_links", binaryMessenger: registrar.messenger())
-    let instance = SwiftFlutterFacebookAppLinksPlugin()
 
+    let instance = SwiftFlutterFacebookAppLinksPlugin()
+    let channel = FlutterMethodChannel(name: "plugins.remedia.it/flutter_facebook_app_links", binaryMessenger: registrar.messenger())
+    
     // Get user consent
     print("FB APP LINK registering plugin")
-    ApplicationDelegate.shared.initializeSDK()
-
+    
+    instance.initializeSDK()
+    
     registrar.addMethodCallDelegate(instance, channel: channel)
+    registrar.addApplicationDelegate(instance)
+  }
+
+  public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+    // detach
+  }
+
+  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+
+      Settings.shared.isAdvertiserTrackingEnabled = false
+      let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
+      ApplicationDelegate.shared.application(
+          application,
+          didFinishLaunchingWithOptions:
+              launchOptionsForFacebook
+      )
+      AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+          if let error = error{
+              print("Error %a", error)
+          }
+          if let url = url {
+              self.deepLinkUrl = url.absoluteString
+              // self.sendMessageToStream(link: self.deepLinkUrl)
+          }
+      }
+      return true
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    // CUSTOM PRIVACY METHODS
     case "consentProvided":
-      Settings.shared.isAutoLogAppEventsEnabled = true
-      ApplicationDelegate.shared.initializeSDK()
-      result(nil)
-    case "consentRevoked":
-      Settings.shared.isAutoLogAppEventsEnabled = false
-      ApplicationDelegate.shared.initializeSDK()
-      result(nil)
-    case "setAdvertiserTrackingEnabled":
-      if let arguments = call.arguments as? [String: Any],
-         let enabled = arguments["enabled"] as? Bool {
-        // Ensure SDK is initialized before setting tracking preferences
+        Settings.shared.isAutoLogAppEventsEnabled = true
         ApplicationDelegate.shared.initializeSDK()
-        Settings.shared.isAdvertiserTrackingEnabled = enabled
         result(nil)
-      } else {
-        result(FlutterError(code: "INVALID_ARGUMENTS",
-                          message: "Expected boolean 'enabled' parameter",
-                          details: nil))
-      }
+    case "consentRevoked":
+        Settings.shared.isAutoLogAppEventsEnabled = false
+        ApplicationDelegate.shared.initializeSDK()
+        result(nil)
+    case "setAdvertiserTrackingEnabled":
+        if let arguments = call.arguments as? [String: Any],
+           let enabled = arguments["enabled"] as? Bool {
+            ApplicationDelegate.shared.initializeSDK()
+            Settings.shared.isAdvertiserTrackingEnabled = enabled
+            result(nil)
+        } else {
+            result(FlutterError(code: "INVALID_ARGUMENTS",
+                              message: "Expected boolean 'enabled' parameter",
+                              details: nil))
+        }
+    
+    // UPSTREAM FACEBOOK SDK 18 METHODS
     case "getPlatformVersion":
-      handleGetPlatformVersion(call, result: result)
+        handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
-      print("FB APP LINK launched")
-      handleFBAppLinks(call, result: result)
-    case "getDeepLinkUrl":
-      print("FB APP LINK getDeepLinkUrl called")
-      handleGetDeepLinkUrl(call, result: result)
+        ApplicationDelegate.shared.initializeSDK()
+        result(nil)
+    case "getDeepLinkUrl":    
+        result(deepLinkUrl)
+    case "activateApp":
+        AppEvents.shared.activateApp()
+        result(true)
     default:
-      result(FlutterMethodNotImplemented)
+        result(FlutterMethodNotImplemented)
     }
   }
+
 
   private func handleGetPlatformVersion(_: FlutterMethodCall, result: @escaping FlutterResult) {
     result("iOS " + UIDevice.current.systemVersion)
@@ -85,6 +120,11 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         result(nil)
       }
     }
+  }
+
+
+  public func initializeSDK() {
+    ApplicationDelegate.shared.initializeSDK()
   }
 
   private func handleGetDeepLinkUrl(_: FlutterMethodCall, result: @escaping FlutterResult) {

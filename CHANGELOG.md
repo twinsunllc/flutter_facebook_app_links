@@ -1,3 +1,57 @@
+## 3.2.0
+
+* Merged upstream Mapk26 master branch - Facebook SDK upgraded to 18.0.0
+* Improved support for in-app purchase events for Original StoreKit APIs and StoreKit 2 APIs
+* Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade
+* **iOS**: Controls `Settings.shared.isAdvertiserTrackingEnabled` - determines SDK tracking reporting to Facebook (required for attribution)  
+* **Android**: Controls `FacebookSdk.setAdvertiserIDCollectionEnabled` - enables/disables advertising ID collection
+* Added platform-specific semantic explanations for proper ATT compliance and privacy handling
+* Updated README with proper method call order and platform-specific semantics
+* Enhanced example app to demonstrate ATT permission flow and tracking consent patterns
+* Added unit tests for new `setAdvertiserTrackingEnabled()` method with error handling
+* Android: Updated to Facebook SDK 18.1.3, MinSDK 21, CompileSDK 35
+* Modernized plugin configuration with explicit platform declarations
+
+## 3.1.0
+* Android: MinSDK 21, CompileSDK 35
+* Android Facebook SDK 18.1.3
+* Update example folder
+
+## 3.0.8
+* FBSDKCoreKit 17.4- -> 18.0
+
+## 3.0.3
+* FBSDKCoreKit 16.0- -> 17.4
+* Added methos activateSDK()
+
+## 3.0.2
+* initFBLinks() now returns, for Android, an empty String when the deferred link is not available. 
+Before this update, the method could return a null value in case of errors.
+For iOS use method getDeepLink().
+
+## 3.0.1+8
+* FBSDKCoreKit 15.1- -> 16.3
+* Android Facebook SDK -> 16.3
+
+## 3.0.1+7
+* FBSDKCoreKit 15.1- -> 16.0 
+
+## 3.0.1+6
+* FBSDKCoreKit 14.1.0- -> 15.1 
+
+## 3.0.0+5
+* README updated
+
+## 3.0.0+4
+* FBSDKCoreKit 14.1.0
+* Code refactoring
+* BREAKING CHANGE: in Android the method initFBLinks() will return a String with the url of the deferred deep link (empty otherwise). 
+For iOS it is necessary to call getDeepLink() after initFBLinks().
+
+## 2.0.0+2
+
+* Null safety
+
 ## 1.2.0+1
 
 * Added `setAdvertiserTrackingEnabled()` method to fix Facebook iOS attribution issues after Flutter 3.27→3.32.5 upgrade.
@@ -7,6 +61,15 @@
 * Updated README with proper method call order and platform-specific semantics
 * Enhanced example app to demonstrate ATT permission flow and tracking consent patterns
 * Added unit tests for new `setAdvertiserTrackingEnabled()` method with error handling
+
+## 1.1.1+4
+
+* Updated FBSDK v7 to v9
+
+## 1.1.1+3
+
+* Updated FBSDK v5 to v7
+* Added MIT License
 
 ## 1.1.0+1
 

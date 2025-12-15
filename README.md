@@ -13,16 +13,17 @@ Get your app id (referred to as `[APP_ID]` below)
 For Android configuration, you can follow the same instructions of the Flutter Facebook App Events plugin:
 Read through the "[Getting Started with App Events for Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android)" tutuorial and in particular, follow [step 2](https://developers.facebook.com/docs/app-events/getting-started-app-events-android#2--add-your-facebook-app-id) by adding the following into `/app/res/values/strings.xml` (or into respective `debug` or `release` build flavor)
 
+configure inside android/app/main/res/values/strings.xml the above values (without square brackets):
 ```xml
-<string name="facebook_app_id">[APP_ID]</string>
+<string name="facebook_app_id">[your_app_id]</string>
+<string name="facebook_client_token">[your_client_token]</string>
 ```
 
-After that, add that string resource reference to your main `AndroidManifest.xml` file
+then, add that string resource reference to your main `AndroidManifest.xml` file, within <application>...</application>
 
 ```xml
-<meta-data
-  android:name="com.facebook.sdk.ApplicationId"
-  android:value="@string/facebook_app_id" />
+<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id" />
+<meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
 ```
 
 If you want to delay event collection (e.g. to obtain GDPR consent), add the following to `AndroidManifest.xml` inside the `<application>` tag:
@@ -104,6 +105,30 @@ Read through the "[Getting Started with App Events for iOS](https://developers.f
 ```
 
 - After obtaining ATT permission, follow the same pattern as Android above: call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent, then call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`.
+
+## How to use
+```dart
+import 'dart:io' show Platform;
+...
+...
+/// FB Deferred Deeplinks
+void initFBDeferredDeeplinks() async {
+
+  String deepLinkUrl;
+  // Platform messages may fail, so we use a try/catch PlatformException.
+  try {
+
+    deepLinkUrl = await FlutterFacebookAppLinks.initFBLinks();
+    if(Platform.isIOS)
+      deepLinkUrl = await FlutterFacebookAppLinks.getDeepLink();
+
+    /// do what you need with the deeplink...
+    /// ...
+  }catche(e){
+    /// in case of error...
+  }
+}
+```
 
 ## About Facebook App Links
 
