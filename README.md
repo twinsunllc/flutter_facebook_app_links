@@ -27,7 +27,6 @@ if (Platform.isIOS) {
   }
 }
 
-
 Get your app id (referred to as `[APP_ID]` below)
 
 ### Configure Android

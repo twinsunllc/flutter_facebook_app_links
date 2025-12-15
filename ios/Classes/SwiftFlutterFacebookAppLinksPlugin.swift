@@ -28,6 +28,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
 
       Settings.shared.isAdvertiserTrackingEnabled = false
+      print("FB APP LINKS: ⚠️ Advertiser tracking DISABLED by default. Call setAdvertiserTrackingEnabled(true) after ATT permission to enable Facebook attribution!")
       let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
       ApplicationDelegate.shared.application(
           application,
@@ -62,6 +63,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
            let enabled = arguments["enabled"] as? Bool {
             ApplicationDelegate.shared.initializeSDK()
             Settings.shared.isAdvertiserTrackingEnabled = enabled
+            print("FB APP LINKS: Advertiser tracking set to \(enabled ? "ENABLED" : "DISABLED") for Facebook attribution")
             result(nil)
         } else {
             result(FlutterError(code: "INVALID_ARGUMENTS",
