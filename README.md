@@ -326,28 +326,62 @@ For complete event specifications and best practices:
 - [Facebook Analytics Help Center](https://developers.facebook.com/docs/analytics/)
 
 ## Facebook App Links Usage
+
+### ⚡ Platform-Specific Performance Notes
+
+#### iOS initFBLinks() Hybrid Caching
+
+**Important Behavioral Change**: iOS `initFBLinks()` now uses a hybrid caching strategy for optimal performance and platform consistency:
+
+- **Fast Path**: Returns cached deep link immediately if available (populated during app launch)
+- **Fallback Path**: Performs network fetch if no cached link exists (~2-5 seconds blocking)
+- **Platform Consistency**: Now matches Android behavior while avoiding UI freezes
+
+**Performance Characteristics:**
+- **During App Launch**: Fast cached response (recommended usage)
+- **Before App Launch Completes**: May perform network fetch (potentially blocking)
+- **After Cache Population**: Always immediate response
+
+**Migration Notes:**
+- **Before**: Method returned empty strings (cached-only limitation)
+- **After**: Actually returns deep link results via hybrid approach
+- **Error Handling**: Now properly throws exceptions (previously silent failures)
+
 ```dart
 import 'dart:io' show Platform;
-...
-...
-/// FB Deferred Deeplinks
+
+/// FB Deferred Deeplinks - Updated for iOS hybrid caching
 void initFBDeferredDeeplinks() async {
-
   String deepLinkUrl;
-  // Platform messages may fail, so we use a try/catch PlatformException.
+
   try {
-
+    // iOS: Hybrid caching - fast cached response or network fallback
+    // Android: Consistent network fetch behavior
     deepLinkUrl = await FlutterFacebookAppLinks.initFBLinks();
-    if(Platform.isIOS)
-      deepLinkUrl = await FlutterFacebookAppLinks.getDeepLink();
 
-    /// do what you need with the deeplink...
-    /// ...
-  }catch(e){
-    /// in case of error...
+    // Note: iOS no longer requires separate getDeepLink() call
+    // The method now actually returns deep link results
+
+    if (deepLinkUrl.isNotEmpty) {
+      // Handle successful deep link
+      navigateToDeepLink(deepLinkUrl);
+    } else {
+      // No deep link available (normal case)
+      proceedWithNormalFlow();
+    }
+
+  } catch (e) {
+    // Network errors or SDK issues now properly propagated
+    // (Previously: Silent failures with empty strings)
+    handleDeepLinkError(e);
   }
 }
 ```
+
+**Best Practices:**
+- Call `initFBLinks()` during app initialization for optimal performance
+- Handle exceptions appropriately (network issues, SDK errors)
+- Test on slow networks to ensure acceptable user experience
 
 ## About Facebook App Links
 
