@@ -195,12 +195,13 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       return;
     }
 
+    // Declare variables outside try block for catch block access
+    String eventName = call.argument("eventName");
+    Map<String, Object> parameters = call.argument("parameters");
+
     try {
       // Ensure SDK is initialized before logging events
       FacebookSdk.fullyInitialize();
-
-      String eventName = call.argument("eventName");
-      Map<String, Object> parameters = call.argument("parameters");
 
       if (eventName == null || eventName.isEmpty()) {
         result.error("INVALID_ARGUMENTS", "Event name cannot be null or empty", null);
