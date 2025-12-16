@@ -191,9 +191,7 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
 
     try {
       // Ensure SDK is initialized before logging events
-      if (!FacebookSdk.isInitialized()) {
-        FacebookSdk.fullyInitialize();
-      }
+      FacebookSdk.fullyInitialize();
 
       String eventName = call.argument("eventName");
       Map<String, Object> parameters = call.argument("parameters");
