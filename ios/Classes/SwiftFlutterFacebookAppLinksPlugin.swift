@@ -29,12 +29,9 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
       Settings.shared.isAdvertiserTrackingEnabled = false
       print("FB APP LINKS: ⚠️ Advertiser tracking DISABLED by default. Call setAdvertiserTrackingEnabled(true) after ATT permission to enable Facebook attribution!")
-      let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
-      ApplicationDelegate.shared.application(
-          application,
-          didFinishLaunchingWithOptions:
-              launchOptionsForFacebook
-      )
+
+      ApplicationDelegate.shared.initializeSDK()
+
       AppLinkUtility.fetchDeferredAppLink{ (url, error) in
           if let error = error{
               print("Error %a", error)
