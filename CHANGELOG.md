@@ -34,6 +34,7 @@
 * Added input validation for `logEvent()` (Facebook event name format requirements)
 * Added input validation for `logPurchaseEvent()` (currency format and positive amounts)
 * Added defensive null context check in Android implementation
+* **Added native-side validation**: Defense in depth validation in iOS and Android prevents invalid data from reaching Facebook SDK
 * **Fixed iOS deep link fetching**: Hybrid approach provides fast cached responses while maintaining platform consistency with Android
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
 * **Enhanced error messages**: Improved consent error messages to explain Flutter hot restart behavior

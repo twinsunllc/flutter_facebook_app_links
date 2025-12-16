@@ -148,6 +148,25 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       return
     }
 
+    // Validate event name format (defense in depth - mirror Dart validation)
+    if eventName.count > 40 {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name must be 1-40 characters",
+                        details: nil))
+      return
+    }
+
+    // Validate event name contains only alphanumeric characters and underscores
+    let eventNamePattern = "^[a-zA-Z0-9_]+$"
+    let eventNameRegex = try? NSRegularExpression(pattern: eventNamePattern, options: [])
+    let eventNameRange = NSRange(location: 0, length: eventName.count)
+    if eventNameRegex?.firstMatch(in: eventName, options: [], range: eventNameRange) == nil {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name must contain only alphanumeric characters and underscores",
+                        details: nil))
+      return
+    }
+
     // Ensure SDK is initialized before logging events
     ApplicationDelegate.shared.initializeSDK()
 

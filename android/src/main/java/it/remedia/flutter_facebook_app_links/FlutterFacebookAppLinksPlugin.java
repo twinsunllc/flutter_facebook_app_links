@@ -203,6 +203,18 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
         return;
       }
 
+      // Defense in depth validation - mirror Dart validation
+      if (eventName.length() > 40) {
+        result.error("INVALID_ARGUMENTS", "Event name must be 1-40 characters", null);
+        return;
+      }
+
+      // Validate event name contains only alphanumeric characters and underscores
+      if (!eventName.matches("^[a-zA-Z0-9_]+$")) {
+        result.error("INVALID_ARGUMENTS", "Event name must contain only alphanumeric characters and underscores", null);
+        return;
+      }
+
       // Create AppEventsLogger instance
       AppEventsLogger logger = AppEventsLogger.newLogger(mContext);
 
