@@ -44,11 +44,17 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       // This is needed because the Swift method is gated behind Swift 6.2+ NonescapableTypes feature
       let selector = NSSelectorFromString("application:didFinishLaunchingWithOptions:")
       if ApplicationDelegate.shared.responds(to: selector) {
-          print("FB APP LINKS: Using selector dispatch for didFinishLaunchingWithOptions")
+          print("FB APP LINKS: Using selector dispatch for didFinishLaunchingWithOptions (full attribution support)")
           let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
           _ = ApplicationDelegate.shared.perform(selector, with: application, with: launchOptionsForFacebook)
       } else {
+          // TELEMETRY: Track fallback usage for attribution reliability monitoring
+          let iosVersion = UIDevice.current.systemVersion
+          let deviceModel = UIDevice.current.model
+          print("FB APP LINKS: ⚠️ ATTRIBUTION FALLBACK TRIGGERED - iOS \(iosVersion) on \(deviceModel)")
           print("FB APP LINKS: ⚠️ FALLBACK: Selector not available, using initializeSDK only - attribution may be affected")
+          print("FB APP LINKS: ⚠️ FALLBACK: StoreKit2 purchase tracking reliability uncertain in fallback mode")
+
           // Fallback to initializeSDK if method not available
           // WARNING: This may not properly register app lifecycle events needed for attribution
           ApplicationDelegate.shared.initializeSDK()

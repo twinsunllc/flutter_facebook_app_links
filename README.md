@@ -104,6 +104,33 @@ Both iOS and Android implementations should be set based on the user's App Track
 
 ### Configure iOS
 
+#### 📱 iOS Version Requirements & Attribution Support
+
+**Critical Attribution Information:**
+
+- **iOS 11.0+** minimum supported
+- **Swift 5.0+** required for basic functionality
+- **Full Attribution Support**: Requires Swift 6.2+ with NonescapableTypes (Xcode 15.0+)
+- **Fallback Mode**: Older Swift versions use limited attribution setup
+
+**Attribution Fallback Warning:**
+When Swift 6.2+ NonescapableTypes are not available, the plugin uses a fallback initialization that may not enable full Facebook attribution features. This could affect:
+
+- StoreKit2 purchase event tracking reliability
+- Facebook Ads attribution accuracy
+- Deferred deep link attribution
+
+**Telemetry Logging:**
+The plugin logs when fallback mode is triggered, including iOS version and device information. Monitor console logs for:
+```
+FB APP LINKS: ⚠️ ATTRIBUTION FALLBACK TRIGGERED - iOS [version] on [device]
+```
+
+**Recommendation:**
+- Use Xcode 15.0+ for full attribution support
+- Test StoreKit2 purchase flows on devices that trigger fallback
+- Monitor telemetry logs for fallback usage rates
+
 #### 📱 Additional Dependencies Required
 
 ##### For iOS ATT Compliance
