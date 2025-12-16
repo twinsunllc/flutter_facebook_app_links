@@ -38,6 +38,7 @@
 * **Fixed iOS deep link fetching**: Hybrid approach provides fast cached responses while maintaining platform consistency with Android
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
 * **Cleaned up Android initialization**: Removed unnecessary SDK initialization check for better code clarity
+* **Enhanced iOS selector dispatch logging**: Added detection logging for Objective-C selector fallback to monitor attribution reliability
 * **Enhanced error messages**: Improved consent error messages to explain Flutter hot restart behavior
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
 * **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
