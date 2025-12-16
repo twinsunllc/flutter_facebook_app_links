@@ -374,6 +374,36 @@ For complete event specifications and best practices:
 - **After**: Actually returns deep link results via hybrid approach
 - **Error Handling**: Now properly throws exceptions (previously silent failures)
 
+#### 🔄 Platform-Specific Deep Link Behavior
+
+**Important**: `initFBLinks()` behaves differently on iOS vs Android due to platform-specific caching strategies:
+
+**iOS (Cached Strategy - Fast but Timing-Dependent):**
+- Returns cached deep link value immediately
+- **Advantage**: No network delay, never blocks UI
+- **Limitation**: Returns empty string if called before `didFinishLaunchingWithOptions` completes
+- **Best Practice**: Call during app initialization after launch completes
+
+**Android (Network Strategy - Slower but Always Fresh):**
+- Performs network fetch to get latest deep link data
+- **Advantage**: Always attempts to retrieve current deep link
+- **Limitation**: May have network latency, potential for timeouts
+- **Behavior**: Consistent regardless of call timing
+
+**Cross-Platform Consistency:**
+For consistent behavior across platforms, use `getDeepLinkUrl()` which performs on-demand network fetching on both iOS and Android.
+
+**Example:**
+```dart
+// iOS: May return empty if called too early in app launch
+// Android: Always fetches fresh data
+String deepLink = await FlutterFacebookAppLinks.initFBLinks();
+
+// For guaranteed fresh data on both platforms:
+// iOS & Android: Always performs network fetch
+String freshLink = await FlutterFacebookAppLinks.getDeepLinkUrl();
+```
+
 ```dart
 import 'dart:io' show Platform;
 

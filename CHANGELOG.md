@@ -45,6 +45,7 @@
 * **Enhanced iOS selector dispatch logging**: Added detection logging for Objective-C selector fallback to monitor attribution reliability
 * **Added iOS attribution telemetry**: Enhanced fallback detection with device info logging for StoreKit2 compatibility monitoring
 * **Documented iOS version requirements**: Added clear attribution support requirements and fallback warnings
+* **Documented platform-specific deep link behavior**: Added comprehensive explanation of iOS vs Android initFBLinks() behavior differences
 * **Enhanced error messages**: Improved event logging error messages to include event name and parameter count for better debugging
 * **Added comprehensive debug logging**: SDK initialization, consent state changes, and event logging details for troubleshooting
 * **Improved type safety**: Replaced hardcoded Facebook parameter strings with constants to prevent typos
