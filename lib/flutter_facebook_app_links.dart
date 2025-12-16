@@ -191,7 +191,10 @@ class FlutterFacebookAppLinks {
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.');
+          'GDPR, CCPA, and other privacy regulations.\n\n'
+          'Note: The consent flag resets on Flutter hot restart, but the native '
+          'Facebook SDK maintains its state. You may need to call consentProvided() '
+          'again after hot restart even though the SDK already has consent.');
     }
 
     // Validate event name according to Facebook requirements
@@ -251,7 +254,10 @@ class FlutterFacebookAppLinks {
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.');
+          'GDPR, CCPA, and other privacy regulations.\n\n'
+          'Note: The consent flag resets on Flutter hot restart, but the native '
+          'Facebook SDK maintains its state. You may need to call consentProvided() '
+          'again after hot restart even though the SDK already has consent.');
     }
 
     // Validate inputs to ensure data quality
@@ -304,7 +310,10 @@ class FlutterFacebookAppLinks {
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.');
+          'GDPR, CCPA, and other privacy regulations.\n\n'
+          'Note: The consent flag resets on Flutter hot restart, but the native '
+          'Facebook SDK maintains its state. You may need to call consentProvided() '
+          'again after hot restart even though the SDK already has consent.');
     }
 
     try {

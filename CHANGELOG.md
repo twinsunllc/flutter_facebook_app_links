@@ -37,6 +37,7 @@
 * **Fixed iOS deep link fetching**: `initFBLinks` now properly returns deep link results instead of empty string (addresses platform inconsistency)
 * **Fixed iOS thread safety**: Eliminated race conditions in deep link fetching by removing shared mutable state
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
+* **Enhanced error messages**: Improved consent error messages to explain Flutter hot restart behavior
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
 * **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
 * Support for standard Facebook event names and custom events
