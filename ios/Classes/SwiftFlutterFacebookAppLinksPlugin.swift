@@ -66,10 +66,12 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     case "consentProvided":
         Settings.shared.isAutoLogAppEventsEnabled = true
         ApplicationDelegate.shared.initializeSDK()
+        print("FB APP LINKS: Consent provided - event logging enabled")
         result(nil)
     case "consentRevoked":
         Settings.shared.isAutoLogAppEventsEnabled = false
         ApplicationDelegate.shared.initializeSDK()
+        print("FB APP LINKS: Consent revoked - event logging disabled")
         result(nil)
     case "setAdvertiserTrackingEnabled":
         if let arguments = call.arguments as? [String: Any],
@@ -201,6 +203,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     do {
         // Log the event
         AppEvents.shared.logEvent(AppEvents.Name(rawValue: eventName), parameters: eventParameters)
+        print("FB APP LINKS: Logged event '\(eventName)' with \(eventParameters.count) parameters")
         result(nil)
     } catch {
         // Include event name and parameter count in error message for better debugging

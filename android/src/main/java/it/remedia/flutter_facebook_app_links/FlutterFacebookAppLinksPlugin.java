@@ -3,7 +3,7 @@ package it.remedia.flutter_facebook_app_links;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
-//import android.util.Log;
+import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.facebook.applinks.AppLinkData;
@@ -79,11 +79,13 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       FacebookSdk.setAutoLogAppEventsEnabled(true);
       FacebookSdk.setAutoInitEnabled(true);
       FacebookSdk.fullyInitialize();
+      Log.d("FB_APP_LINKS", "Consent provided - event logging enabled");
       result.success("");
     } else if (call.method.equals("consentRevoked")) {
       FacebookSdk.setAutoLogAppEventsEnabled(false);
       FacebookSdk.setAutoInitEnabled(false);
       FacebookSdk.fullyInitialize();
+      Log.d("FB_APP_LINKS", "Consent revoked - event logging disabled");
       result.success("");
     } else if (call.method.equals("setAdvertiserTrackingEnabled")) {
       Boolean enabled = call.argument("enabled");
@@ -242,6 +244,7 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
 
       // Log the event
       logger.logEvent(eventName, params);
+      Log.d("FB_APP_LINKS", "Logged event '" + eventName + "' with " + parameters.size() + " parameters");
       result.success(null);
 
     } catch (Exception e) {
