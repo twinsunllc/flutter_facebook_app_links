@@ -9,6 +9,26 @@ class FlutterFacebookAppLinks {
   /// This is used to enforce privacy compliance before allowing event logging.
   static bool _hasConsent = false;
 
+  /// Tracks whether we've synchronized consent state with native SDK after hot restart
+  static bool _consentStateSynced = false;
+
+  /// Synchronizes the Dart consent state with the native SDK state.
+  /// This handles the case where Flutter hot restart resets Dart state
+  /// but the native Facebook SDK maintains its consent state.
+  static Future<void> _syncConsentState() async {
+    if (_consentStateSynced) return; // Already synced
+
+    try {
+      final nativeConsent = await _channel.invokeMethod('getConsentState');
+      _hasConsent = nativeConsent == true;
+      _consentStateSynced = true;
+      debugPrint('Synced consent state with native SDK: $_hasConsent');
+    } catch (e) {
+      // If sync fails, keep current state (default to false for safety)
+      debugPrint('Failed to sync consent state: $e');
+    }
+  }
+
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
@@ -185,14 +205,14 @@ class FlutterFacebookAppLinks {
   /// Throws [ArgumentError] if event name format is invalid
   /// Throws [PlatformException] if the platform-specific call fails
   static Future<void> logEvent(String eventName, [Map<String, dynamic>? parameters]) async {
+    // Sync consent state with native SDK to handle hot restart scenarios
+    await _syncConsentState();
+
     // Enforce privacy compliance - require explicit consent
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.\n\n'
-          'Note: The consent flag resets on Flutter hot restart, but the native '
-          'Facebook SDK maintains its state. You may need to call consentProvided() '
-          'again after hot restart even though the SDK already has consent.');
+          'GDPR, CCPA, and other privacy regulations.');
     }
 
     // Validate event name according to Facebook requirements
@@ -248,14 +268,14 @@ class FlutterFacebookAppLinks {
     String currency, [
     Map<String, dynamic>? parameters,
   ]) async {
+    // Sync consent state with native SDK to handle hot restart scenarios
+    await _syncConsentState();
+
     // Enforce privacy compliance - require explicit consent
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.\n\n'
-          'Note: The consent flag resets on Flutter hot restart, but the native '
-          'Facebook SDK maintains its state. You may need to call consentProvided() '
-          'again after hot restart even though the SDK already has consent.');
+          'GDPR, CCPA, and other privacy regulations.');
     }
 
     // Validate inputs to ensure data quality
@@ -304,14 +324,14 @@ class FlutterFacebookAppLinks {
   /// Throws [StateError] if user consent has not been provided
   /// Throws [PlatformException] if the platform-specific call fails
   static Future<void> logCompleteRegistration([String? registrationMethod]) async {
+    // Sync consent state with native SDK to handle hot restart scenarios
+    await _syncConsentState();
+
     // Enforce privacy compliance - require explicit consent
     if (!_hasConsent) {
       throw StateError('Facebook tracking consent must be provided before logging events. '
           'Call consentProvided() after obtaining user consent to comply with '
-          'GDPR, CCPA, and other privacy regulations.\n\n'
-          'Note: The consent flag resets on Flutter hot restart, but the native '
-          'Facebook SDK maintains its state. You may need to call consentProvided() '
-          'again after hot restart even though the SDK already has consent.');
+          'GDPR, CCPA, and other privacy regulations.');
     }
 
     try {

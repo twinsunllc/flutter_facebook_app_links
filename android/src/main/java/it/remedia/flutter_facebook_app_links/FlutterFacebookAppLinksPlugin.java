@@ -107,6 +107,10 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       AppEventsLogger.flush();
       Log.d("FB_APP_LINKS", "Flushed all pending events");
       result.success(null);
+    } else if (call.method.equals("getConsentState")) {
+      // Query native SDK consent state for hot restart synchronization
+      boolean hasConsent = FacebookSdk.getAutoLogAppEventsEnabled();
+      result.success(hasConsent);
     } else {
       result.notImplemented();
     }

@@ -124,6 +124,10 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         AppEvents.flush()
         print("FB APP LINKS: Flushed all pending events")
         result(nil)
+    case "getConsentState":
+        // Query native SDK consent state for hot restart synchronization
+        let hasConsent = Settings.shared.isAutoLogAppEventsEnabled
+        result(hasConsent)
     default:
         result(FlutterMethodNotImplemented)
     }
