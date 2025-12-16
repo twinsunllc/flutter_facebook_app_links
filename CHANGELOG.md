@@ -35,6 +35,7 @@
 * Added input validation for `logPurchaseEvent()` (currency format and positive amounts)
 * Added defensive null context check in Android implementation
 * **Fixed iOS deep link fetching**: `initFBLinks` now properly returns deep link results instead of empty string (addresses platform inconsistency)
+* **Fixed iOS thread safety**: Eliminated race conditions in deep link fetching by removing shared mutable state
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
 * **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
 * Support for standard Facebook event names and custom events

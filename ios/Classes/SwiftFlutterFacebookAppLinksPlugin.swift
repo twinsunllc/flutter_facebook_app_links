@@ -5,7 +5,8 @@ import UIKit
 
 public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
-  var deepLinkUrl:String = ""
+  // Removed deepLinkUrl instance variable to eliminate thread safety race conditions
+  // Both initFBLinks and getDeepLinkUrl now fetch on-demand instead of using cached state
 
   public static func register(with registrar: FlutterPluginRegistrar) {
 
@@ -41,15 +42,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
           ApplicationDelegate.shared.initializeSDK()
       }
 
-      AppLinkUtility.fetchDeferredAppLink{ (url, error) in
-          if let error = error{
-              print("Error %a", error)
-          }
-          if let url = url {
-              self.deepLinkUrl = url.absoluteString
-              // self.sendMessageToStream(link: self.deepLinkUrl)
-          }
-      }
+      // Removed async deep link caching to eliminate race conditions
+      // Both initFBLinks and getDeepLinkUrl now fetch on-demand
       return true
   }
 
@@ -98,8 +92,18 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
                 result("")
             }
         }
-    case "getDeepLinkUrl":    
-        result(deepLinkUrl)
+    case "getDeepLinkUrl":
+        // Always fetch on-demand to eliminate race conditions and ensure fresh data
+        AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+            if let error = error {
+                print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+                result("")
+            } else if let url = url {
+                result(url.absoluteString)
+            } else {
+                result("")
+            }
+        }
     case "activateApp":
         AppEvents.shared.activateApp()
         result(true)
