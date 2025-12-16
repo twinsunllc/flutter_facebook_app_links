@@ -270,8 +270,8 @@ class FlutterFacebookAppLinks {
 
     try {
       final Map<String, dynamic> params = Map.from(parameters ?? {});
-      params['fb_currency'] = currency;
-      params['_valueToSum'] = amount;
+      params[FacebookParameters.currency] = currency;
+      params[FacebookParameters.valueToSum] = amount;
 
       await _channel.invokeMethod('logEvent', {
         'eventName': 'fb_mobile_purchase',
@@ -487,10 +487,14 @@ class FacebookParameters {
   // Success and status
   static const String success = 'fb_success';
 
+  // Standard Facebook parameters (commonly used)
+  static const String valueToSum = '_valueToSum';
+  static const String orderId = 'fb_order_id';
+  static const String predictedLtv = 'fb_predicted_ltv';
+
   // App-specific parameters (commonly used)
   static const String level = 'fb_level';
   static const String score = 'fb_score';
   static const String maxRatingValue = 'fb_max_rating_value';
   static const String paymentInfoAvailable = 'fb_payment_info_available';
-  static const String orderId = 'fb_order_id';
 }

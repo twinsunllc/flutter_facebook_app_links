@@ -160,14 +160,14 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> logPurchase() async {
     try {
-      // Log a purchase event
+      // Log a purchase event using type-safe constants
       await FlutterFacebookAppLinks.logPurchaseEvent(
         49.99,
         'USD',
         {
-          'fb_content_id': 'product_12345',
-          'fb_content_type': 'product',
-          'fb_num_items': 2,
+          FacebookParameters.contentId: 'product_12345',
+          FacebookParameters.contentType: 'product',
+          FacebookParameters.numItems: 2,
         },
       );
 

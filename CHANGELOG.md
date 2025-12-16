@@ -42,6 +42,7 @@
 * **Enhanced iOS selector dispatch logging**: Added detection logging for Objective-C selector fallback to monitor attribution reliability
 * **Enhanced error messages**: Improved event logging error messages to include event name and parameter count for better debugging
 * **Added comprehensive debug logging**: SDK initialization, consent state changes, and event logging details for troubleshooting
+* **Improved type safety**: Replaced hardcoded Facebook parameter strings with constants to prevent typos
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
 * **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
 * Support for standard Facebook event names and custom events
