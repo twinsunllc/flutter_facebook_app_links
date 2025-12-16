@@ -100,27 +100,10 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
         ApplicationDelegate.shared.initializeSDK()
-        // HYBRID APPROACH: Return cached value immediately for fast UX,
-        // fallback to on-demand fetch only if cache is empty
-        // This provides platform consistency with Android while avoiding blocking UI
-        if !cachedDeepLinkUrl.isEmpty {
-            // ✅ FAST: Return cached value from app launch immediately
-            result(cachedDeepLinkUrl)
-        } else {
-            // Fallback: Fetch on-demand (only if cache not populated yet)
-            // This handles edge cases where initFBLinks is called before didFinishLaunchingWithOptions
-            AppLinkUtility.fetchDeferredAppLink{ (url, error) in
-                if let error = error {
-                    print("FB APP LINKS: Error fetching deferred deep link: \(error)")
-                    result("")
-                } else if let url = url {
-                    self.cachedDeepLinkUrl = url.absoluteString  // Cache for future calls
-                    result(url.absoluteString)
-                } else {
-                    result("")
-                }
-            }
-        }
+        // NON-BLOCKING: Always return cached value immediately for fast UX
+        // Never block on network calls during app initialization
+        // Users can call getDeepLinkUrl() separately for fresh data if needed
+        result(cachedDeepLinkUrl)
     case "getDeepLinkUrl":
         // Always fetch on-demand to eliminate race conditions and ensure fresh data
         AppLinkUtility.fetchDeferredAppLink{ (url, error) in
