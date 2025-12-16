@@ -16,7 +16,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     // Get user consent
     print("FB APP LINK registering plugin")
 
-    instance.initializeSDK()
+    // Removed redundant initializeSDK() call - SDK is initialized in didFinishLaunchingWithOptions
+    // and individual methods call initializeSDK() as needed
 
     registrar.addMethodCallDelegate(instance, channel: channel)
     registrar.addApplicationDelegate(instance)
