@@ -37,6 +37,7 @@
 * **Added event batching controls**: New `flushEvents()` method provides control over Facebook SDK event batching for performance tuning and debugging
 * **Added native-side validation**: Defense in depth validation in iOS and Android prevents invalid data from reaching Facebook SDK
 * **Fixed iOS deep link fetching**: Hybrid approach provides fast cached responses while maintaining platform consistency with Android
+* **Fixed critical iOS race condition**: Implemented thread-safe DispatchQueue synchronization for cachedDeepLinkUrl to prevent crashes and data corruption
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
 * **Cleaned up Android initialization**: Removed unnecessary SDK initialization check for better code clarity
 * **Enhanced iOS selector dispatch logging**: Added detection logging for Objective-C selector fallback to monitor attribution reliability

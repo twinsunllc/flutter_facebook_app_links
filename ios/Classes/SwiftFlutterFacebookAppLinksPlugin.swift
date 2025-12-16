@@ -5,9 +5,16 @@ import UIKit
 
 public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
-  // Cached deep link URL from app launch (populated in didFinishLaunchingWithOptions)
-  // Provides fast access while maintaining thread safety (only accessed from main thread)
-  var cachedDeepLinkUrl: String = ""
+  // Thread-safe cached deep link URL to prevent race conditions
+  // Facebook SDK callbacks run on background threads, but Flutter method calls are on main thread
+  private let deepLinkQueue = DispatchQueue(label: "com.remedia.deeplink")
+  private var _cachedDeepLinkUrl: String = ""
+
+  // Thread-safe access to cached deep link URL
+  private var cachedDeepLinkUrl: String {
+      get { deepLinkQueue.sync { _cachedDeepLinkUrl } }
+      set { deepLinkQueue.async { self._cachedDeepLinkUrl = newValue } }
+  }
 
   public static func register(with registrar: FlutterPluginRegistrar) {
 
