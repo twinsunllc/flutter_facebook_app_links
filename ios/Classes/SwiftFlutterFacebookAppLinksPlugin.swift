@@ -76,7 +76,20 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
         ApplicationDelegate.shared.initializeSDK()
-        result("")
+        // FIXED: Fetch deferred deep link on-demand for platform consistency with Android
+        // NOTE: This deviates from upstream parent package which returns nil/null
+        // Upstream returns nil to avoid blocking, but this creates platform inconsistency
+        // This fix ensures initFBLinks actually returns the deep link result as expected
+        AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+            if let error = error {
+                print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+                result("")
+            } else if let url = url {
+                result(url.absoluteString)
+            } else {
+                result("")
+            }
+        }
     case "getDeepLinkUrl":    
         result(deepLinkUrl)
     case "activateApp":
