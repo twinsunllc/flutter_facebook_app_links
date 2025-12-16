@@ -257,21 +257,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> flushEvents() async {
-    try {
-      // Force immediate sending of all batched events
-      await FlutterFacebookAppLinks.flushEvents();
-
-      setState(() {
-        _eventLoggingStatus = '✅ Events flushed - all pending events sent immediately';
-      });
-    } catch (e) {
-      setState(() {
-        _eventLoggingStatus = 'Error flushing events: $e';
-      });
-    }
-  }
-
   Future<void> revokeConsent() async {
     try {
       // Revoke consent to demonstrate enforcement
@@ -424,14 +409,6 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Try Negative Purchase Amount'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                  ),
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: flushEvents,
-                  child: Text('Flush Events (Force Send)'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
                   ),
                 ),
                 SizedBox(height: 20),
