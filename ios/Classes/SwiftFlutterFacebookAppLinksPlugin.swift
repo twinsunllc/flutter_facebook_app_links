@@ -2,107 +2,217 @@ import FBSDKCoreKit
 import Flutter
 import UIKit
 
+
 public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
-  // fileprivate var resulter: FlutterResult? = nil
+
+  // Thread-safe cached deep link URL to prevent race conditions
+  // Facebook SDK callbacks run on background threads, but Flutter method calls are on main thread
+  private let deepLinkQueue = DispatchQueue(label: "com.remedia.deeplink")
+  private var _cachedDeepLinkUrl: String = ""
+
+  // Thread-safe access to cached deep link URL
+  private var cachedDeepLinkUrl: String {
+      get { deepLinkQueue.sync { _cachedDeepLinkUrl } }
+      set { deepLinkQueue.async { self._cachedDeepLinkUrl = newValue } }
+  }
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "plugins.remedia.it/flutter_facebook_app_links", binaryMessenger: registrar.messenger())
+
     let instance = SwiftFlutterFacebookAppLinksPlugin()
+    let channel = FlutterMethodChannel(name: "plugins.remedia.it/flutter_facebook_app_links", binaryMessenger: registrar.messenger())
 
     // Get user consent
     print("FB APP LINK registering plugin")
-    ApplicationDelegate.shared.initializeSDK()
+
+    // Removed redundant initializeSDK() call - SDK is initialized in didFinishLaunchingWithOptions
+    // and individual methods call initializeSDK() as needed
 
     registrar.addMethodCallDelegate(instance, channel: channel)
+    registrar.addApplicationDelegate(instance)
+  }
+
+  public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+    // detach
+  }
+
+  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+
+      Settings.shared.isAdvertiserTrackingEnabled = false
+      print("FB APP LINKS: ⚠️ Advertiser tracking DISABLED by default. Call setAdvertiserTrackingEnabled(true) after ATT permission to enable Facebook attribution!")
+
+      // Call Facebook SDK's didFinishLaunchingWithOptions via dynamic Objective-C selector
+      // This is needed because the Swift method is gated behind Swift 6.2+ NonescapableTypes feature
+      let selector = NSSelectorFromString("application:didFinishLaunchingWithOptions:")
+      if ApplicationDelegate.shared.responds(to: selector) {
+          print("FB APP LINKS: Using selector dispatch for didFinishLaunchingWithOptions (full attribution support)")
+          let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
+          _ = ApplicationDelegate.shared.perform(selector, with: application, with: launchOptionsForFacebook)
+      } else {
+          // TELEMETRY: Track fallback usage for attribution reliability monitoring
+          let iosVersion = UIDevice.current.systemVersion
+          let deviceModel = UIDevice.current.model
+          print("FB APP LINKS: ⚠️ ATTRIBUTION FALLBACK TRIGGERED - iOS \(iosVersion) on \(deviceModel)")
+          print("FB APP LINKS: ⚠️ FALLBACK: Selector not available, using initializeSDK only - attribution may be affected")
+          print("FB APP LINKS: ⚠️ FALLBACK: StoreKit2 purchase tracking reliability uncertain in fallback mode")
+
+          // Fallback to initializeSDK if method not available
+          // WARNING: This may not properly register app lifecycle events needed for attribution
+          ApplicationDelegate.shared.initializeSDK()
+      }
+
+      // Cache deep link URL for fast access during app lifecycle
+      // This provides immediate response for initFBLinks while avoiding blocking UI
+      AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+          if let error = error {
+              print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+          } else if let url = url {
+              self.cachedDeepLinkUrl = url.absoluteString
+              print("FB APP LINKS: Cached deep link URL: \(self.cachedDeepLinkUrl)")
+          }
+      }
+      return true
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    // CUSTOM PRIVACY METHODS
     case "consentProvided":
-      Settings.shared.isAutoLogAppEventsEnabled = true
-      ApplicationDelegate.shared.initializeSDK()
-      result(nil)
-    case "consentRevoked":
-      Settings.shared.isAutoLogAppEventsEnabled = false
-      ApplicationDelegate.shared.initializeSDK()
-      result(nil)
-    case "setAdvertiserTrackingEnabled":
-      if let arguments = call.arguments as? [String: Any],
-         let enabled = arguments["enabled"] as? Bool {
-        // Ensure SDK is initialized before setting tracking preferences
+        Settings.shared.isAutoLogAppEventsEnabled = true
         ApplicationDelegate.shared.initializeSDK()
-        Settings.shared.isAdvertiserTrackingEnabled = enabled
+        print("FB APP LINKS: Consent provided - event logging enabled")
         result(nil)
-      } else {
-        result(FlutterError(code: "INVALID_ARGUMENTS",
-                          message: "Expected boolean 'enabled' parameter",
-                          details: nil))
-      }
+    case "consentRevoked":
+        Settings.shared.isAutoLogAppEventsEnabled = false
+        ApplicationDelegate.shared.initializeSDK()
+        print("FB APP LINKS: Consent revoked - event logging disabled")
+        result(nil)
+    case "setAdvertiserTrackingEnabled":
+        if let arguments = call.arguments as? [String: Any],
+           let enabled = arguments["enabled"] as? Bool {
+            ApplicationDelegate.shared.initializeSDK()
+            Settings.shared.isAdvertiserTrackingEnabled = enabled
+            print("FB APP LINKS: Advertiser tracking set to \(enabled ? "ENABLED" : "DISABLED") for Facebook attribution")
+            result(nil)
+        } else {
+            result(FlutterError(code: "INVALID_ARGUMENTS",
+                              message: "Expected boolean 'enabled' parameter",
+                              details: nil))
+        }
+    case "logEvent":
+      handleLogEvent(call, result: result)
+    
+    // UPSTREAM FACEBOOK SDK 18 METHODS
     case "getPlatformVersion":
-      handleGetPlatformVersion(call, result: result)
+        handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
-      print("FB APP LINK launched")
-      handleFBAppLinks(call, result: result)
+        ApplicationDelegate.shared.initializeSDK()
+        // NON-BLOCKING: Always return cached value immediately for fast UX
+        // Never block on network calls during app initialization
+        // Users can call getDeepLinkUrl() separately for fresh data if needed
+        result(cachedDeepLinkUrl)
     case "getDeepLinkUrl":
-      print("FB APP LINK getDeepLinkUrl called")
-      handleGetDeepLinkUrl(call, result: result)
+        // Always fetch on-demand to eliminate race conditions and ensure fresh data
+        AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+            if let error = error {
+                print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+                result("")
+            } else if let url = url {
+                result(url.absoluteString)
+            } else {
+                result("")
+            }
+        }
+    case "activateApp":
+        AppEvents.shared.activateApp()
+        result(true)
+    case "getConsentState":
+        // Query native SDK consent state for hot restart synchronization
+        let hasConsent = Settings.shared.isAutoLogAppEventsEnabled
+        result(hasConsent)
     default:
-      result(FlutterMethodNotImplemented)
+        result(FlutterMethodNotImplemented)
     }
   }
+
 
   private func handleGetPlatformVersion(_: FlutterMethodCall, result: @escaping FlutterResult) {
     result("iOS " + UIDevice.current.systemVersion)
   }
 
-  private func handleFBAppLinks(_: FlutterMethodCall, result: @escaping FlutterResult) {
-    print("FB APP LINKS Starting ")
-
-    AppLinkUtility.fetchDeferredAppLink { url, error in
-      if let error = error {
-        print("Received error while fetching deferred app link %@", error)
-        result(nil)
-      }
-
-      if let url = url {
-        print("FB APP LINKS getting url: ", String(url.absoluteString))
-
-        var mapData: [String: String?] = ["deeplink": url.absoluteString, "promotionalCode": nil]
-
-        if let code = AppLinkUtility.appInvitePromotionCode(from: url) {
-          print("promotional code " + String(code))
-          mapData["promotionalCode"] = code
-        } else { // nil
-        }
-
-        if #available(iOS 10, *) {
-          result(mapData)
-        } else {
-          result(mapData)
-        }
-      } else {
-        // no deep link received
-        result(nil)
-      }
-    }
+  public func initializeSDK() {
+    ApplicationDelegate.shared.initializeSDK()
   }
 
-  private func handleGetDeepLinkUrl(_: FlutterMethodCall, result: @escaping FlutterResult) {
-    print("FB APP LINKS getDeepLinkUrl Starting ")
+  private func handleLogEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let eventName = arguments["eventName"] as? String,
+          !eventName.isEmpty else {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name cannot be null or empty",
+                        details: nil))
+      return
+    }
 
-    AppLinkUtility.fetchDeferredAppLink { url, error in
-      if let error = error {
-        print("Received error while fetching deferred app link %@", error)
-        result("")
-      }
+    // Validate event name format (defense in depth - mirror Dart validation)
+    if eventName.count > 40 {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name must be 1-40 characters",
+                        details: nil))
+      return
+    }
 
-      if let url = url {
-        print("FB APP LINKS getDeepLinkUrl getting url: ", String(url.absoluteString))
-        result(url.absoluteString)
+    // Validate event name contains only alphanumeric characters and underscores
+    let eventNamePattern = "^[a-zA-Z0-9_]+$"
+    let eventNameRegex = try? NSRegularExpression(pattern: eventNamePattern, options: [])
+    let eventNameRange = NSRange(location: 0, length: eventName.count)
+    if eventNameRegex?.firstMatch(in: eventName, options: [], range: eventNameRange) == nil {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name must contain only alphanumeric characters and underscores",
+                        details: nil))
+      return
+    }
+
+    // Ensure SDK is initialized before logging events
+    ApplicationDelegate.shared.initializeSDK()
+
+    // Get parameters dictionary (can be nil/empty)
+    let parameters = arguments["parameters"] as? [String: Any] ?? [:]
+
+    // Convert parameters to proper types for AppEvents
+    var eventParameters: [AppEvents.ParameterName: Any] = [:]
+
+    for (key, value) in parameters {
+      // Create custom parameter name from the key string
+      let parameterName = AppEvents.ParameterName(rawValue: key)
+
+      // Check specific types first to avoid NSNumber overlap
+      if let stringValue = value as? String {
+        eventParameters[parameterName] = stringValue
+      } else if let intValue = value as? Int {
+        eventParameters[parameterName] = intValue
+      } else if let doubleValue = value as? Double {
+        eventParameters[parameterName] = doubleValue
+      } else if let boolValue = value as? Bool {
+        eventParameters[parameterName] = boolValue
       } else {
-        // no deep link received
-        result("")
+        // Fallback for unexpected types
+        eventParameters[parameterName] = String(describing: value)
       }
+    }
+
+    do {
+        // Log the event
+        AppEvents.shared.logEvent(AppEvents.Name(rawValue: eventName), parameters: eventParameters)
+        print("FB APP LINKS: Logged event '\(eventName)' with \(eventParameters.count) parameters")
+        result(nil)
+    } catch {
+        // Include event name and parameter count in error message for better debugging
+        let paramCount = eventParameters.count
+        result(FlutterError(
+            code: "EVENT_LOGGING_ERROR",
+            message: "Failed to log event '\(eventName)' with \(paramCount) parameters: \(error.localizedDescription)",
+            details: nil
+        ))
     }
   }
 }
