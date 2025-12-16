@@ -5,8 +5,9 @@ import UIKit
 
 public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
-  // Removed deepLinkUrl instance variable to eliminate thread safety race conditions
-  // Both initFBLinks and getDeepLinkUrl now fetch on-demand instead of using cached state
+  // Cached deep link URL from app launch (populated in didFinishLaunchingWithOptions)
+  // Provides fast access while maintaining thread safety (only accessed from main thread)
+  var cachedDeepLinkUrl: String = ""
 
   public static func register(with registrar: FlutterPluginRegistrar) {
 
@@ -43,8 +44,16 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
           ApplicationDelegate.shared.initializeSDK()
       }
 
-      // Removed async deep link caching to eliminate race conditions
-      // Both initFBLinks and getDeepLinkUrl now fetch on-demand
+      // Cache deep link URL for fast access during app lifecycle
+      // This provides immediate response for initFBLinks while avoiding blocking UI
+      AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+          if let error = error {
+              print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+          } else if let url = url {
+              self.cachedDeepLinkUrl = url.absoluteString
+              print("FB APP LINKS: Cached deep link URL: \(self.cachedDeepLinkUrl)")
+          }
+      }
       return true
   }
 
@@ -79,18 +88,25 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
         handleGetPlatformVersion(call, result: result)
     case "initFBLinks":
         ApplicationDelegate.shared.initializeSDK()
-        // FIXED: Fetch deferred deep link on-demand for platform consistency with Android
-        // NOTE: This deviates from upstream parent package which returns nil/null
-        // Upstream returns nil to avoid blocking, but this creates platform inconsistency
-        // This fix ensures initFBLinks actually returns the deep link result as expected
-        AppLinkUtility.fetchDeferredAppLink{ (url, error) in
-            if let error = error {
-                print("FB APP LINKS: Error fetching deferred deep link: \(error)")
-                result("")
-            } else if let url = url {
-                result(url.absoluteString)
-            } else {
-                result("")
+        // HYBRID APPROACH: Return cached value immediately for fast UX,
+        // fallback to on-demand fetch only if cache is empty
+        // This provides platform consistency with Android while avoiding blocking UI
+        if !cachedDeepLinkUrl.isEmpty {
+            // ✅ FAST: Return cached value from app launch immediately
+            result(cachedDeepLinkUrl)
+        } else {
+            // Fallback: Fetch on-demand (only if cache not populated yet)
+            // This handles edge cases where initFBLinks is called before didFinishLaunchingWithOptions
+            AppLinkUtility.fetchDeferredAppLink{ (url, error) in
+                if let error = error {
+                    print("FB APP LINKS: Error fetching deferred deep link: \(error)")
+                    result("")
+                } else if let url = url {
+                    self.cachedDeepLinkUrl = url.absoluteString  // Cache for future calls
+                    result(url.absoluteString)
+                } else {
+                    result("")
+                }
             }
         }
     case "getDeepLinkUrl":

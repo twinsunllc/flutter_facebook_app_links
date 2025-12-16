@@ -34,8 +34,7 @@
 * Added input validation for `logEvent()` (Facebook event name format requirements)
 * Added input validation for `logPurchaseEvent()` (currency format and positive amounts)
 * Added defensive null context check in Android implementation
-* **Fixed iOS deep link fetching**: `initFBLinks` now properly returns deep link results instead of empty string (addresses platform inconsistency)
-* **Fixed iOS thread safety**: Eliminated race conditions in deep link fetching by removing shared mutable state
+* **Fixed iOS deep link fetching**: Hybrid approach provides fast cached responses while maintaining platform consistency with Android
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
 * **Enhanced error messages**: Improved consent error messages to explain Flutter hot restart behavior
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
