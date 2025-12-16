@@ -2,6 +2,132 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart';
 
+/// Convenience constants for Facebook Analytics event names.
+///
+/// This class provides constants for standard Facebook event names to prevent
+/// typos and improve developer experience with auto-completion.
+///
+/// **Standard Facebook Events:**
+/// Use these predefined events for common user actions that Facebook recognizes
+/// for analytics, optimization, and audience creation.
+///
+/// **Custom Events:**
+/// Create your own event names for app-specific actions. Follow Facebook's
+/// naming conventions: max 40 characters, alphanumeric + underscore.
+///
+/// **Usage:**
+/// ```dart
+/// // Standard event
+/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.purchase, {
+///   FacebookParameters.contentId: 'product_123',
+///   FacebookParameters.currency: 'USD',
+/// });
+///
+/// // Custom event
+/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.trialStarted);
+/// ```
+class FacebookEvents {
+  // Standard Facebook commerce events
+  static const String purchase = 'fb_mobile_purchase';
+  static const String addToCart = 'fb_mobile_add_to_cart';
+  static const String addToWishlist = 'fb_mobile_add_to_wishlist';
+  static const String initiateCheckout = 'fb_mobile_initiated_checkout';
+
+  // Standard Facebook engagement events
+  static const String completeRegistration = 'fb_mobile_complete_registration';
+  static const String search = 'fb_mobile_search';
+  static const String viewContent = 'fb_mobile_content_view';
+  static const String rate = 'fb_mobile_rate';
+  static const String contact = 'fb_mobile_contact';
+  static const String customizeProduct = 'fb_mobile_customize_product';
+  static const String donate = 'fb_mobile_donate';
+  static const String findLocation = 'fb_mobile_find_location';
+  static const String schedule = 'fb_mobile_schedule';
+  static const String startTrial = 'fb_mobile_start_trial';
+  static const String submitApplication = 'fb_mobile_submit_application';
+  static const String subscribe = 'fb_mobile_subscribe';
+  static const String adClick = 'fb_mobile_ad_click';
+  static const String adImpression = 'fb_mobile_ad_impression';
+
+  // Achievement events
+  static const String achieveLevel = 'fb_mobile_achievement_unlocked';
+  static const String unlockAchievement = 'fb_mobile_achievement_unlocked';
+  static const String completeTutorial = 'fb_mobile_tutorial_completion';
+
+  // Common custom events (examples - create your own)
+  static const String trialStarted = 'trial_started';
+  static const String levelAchieved = 'level_achieved';
+  static const String tutorialCompleted = 'tutorial_completed';
+  static const String featureUsed = 'feature_used';
+  static const String screenViewed = 'screen_viewed';
+  static const String buttonClicked = 'button_clicked';
+  static const String formSubmitted = 'form_submitted';
+  static const String videoPlayed = 'video_played';
+  static const String fileDownloaded = 'file_downloaded';
+}
+
+/// Convenience constants for Facebook Analytics event parameters.
+///
+/// This class provides constants for standard Facebook event parameter names
+/// to prevent typos and improve developer experience with auto-completion.
+///
+/// **Content Parameters:**
+/// Used to describe content being interacted with (products, articles, etc.)
+///
+/// **Commerce Parameters:**
+/// Used for purchase and transaction tracking
+///
+/// **User Parameters:**
+/// Used for user attribution and behavior tracking
+///
+/// **Usage:**
+/// ```dart
+/// // Purchase event with parameters
+/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.purchase, {
+///   FacebookParameters.contentId: 'product_123',
+///   FacebookParameters.contentType: 'product',
+///   FacebookParameters.numItems: 2,
+///   FacebookParameters.currency: 'USD',
+///   '_valueToSum': 49.99,  // Standard Facebook parameter
+/// });
+///
+/// // Content view event
+/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.viewContent, {
+///   FacebookParameters.contentId: 'article_456',
+///   FacebookParameters.contentType: 'article',
+/// });
+/// ```
+class FacebookParameters {
+  // Content identification
+  static const String contentId = 'fb_content_id';
+  static const String contentType = 'fb_content_type';
+  static const String contentCategory = 'fb_content_category';
+
+  // Commerce and quantity
+  static const String numItems = 'fb_num_items';
+  static const String currency = 'fb_currency';
+  static const String value = 'fb_value';
+
+  // User and attribution
+  static const String registrationMethod = 'fb_registration_method';
+  static const String searchString = 'fb_search_string';
+  static const String description = 'fb_description';
+
+  // Success and status
+  static const String success = 'fb_success';
+
+  // Standard Facebook parameters (commonly used)
+  static const String valueToSum = '_valueToSum';
+  static const String orderId = 'fb_order_id';
+  static const String predictedLtv = 'fb_predicted_ltv';
+
+  // App-specific parameters (commonly used)
+  static const String level = 'fb_level';
+  static const String score = 'fb_score';
+  static const String maxRatingValue = 'fb_max_rating_value';
+  static const String paymentInfoAvailable = 'fb_payment_info_available';
+}
+
 class FlutterFacebookAppLinks {
   static const MethodChannel _channel = const MethodChannel("plugins.remedia.it/flutter_facebook_app_links");
 
@@ -349,129 +475,4 @@ class FlutterFacebookAppLinks {
       rethrow;
     }
   }
-
-/// Convenience constants for Facebook Analytics event names.
-///
-/// This class provides constants for standard Facebook event names to prevent
-/// typos and improve developer experience with auto-completion.
-///
-/// **Standard Facebook Events:**
-/// Use these predefined events for common user actions that Facebook recognizes
-/// for analytics, optimization, and audience creation.
-///
-/// **Custom Events:**
-/// Create your own event names for app-specific actions. Follow Facebook's
-/// naming conventions: max 40 characters, alphanumeric + underscore.
-///
-/// **Usage:**
-/// ```dart
-/// // Standard event
-/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.purchase, {
-///   FacebookParameters.contentId: 'product_123',
-///   FacebookParameters.currency: 'USD',
-/// });
-///
-/// // Custom event
-/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.trialStarted);
-/// ```
-class FacebookEvents {
-  // Standard Facebook commerce events
-  static const String purchase = 'fb_mobile_purchase';
-  static const String addToCart = 'fb_mobile_add_to_cart';
-  static const String addToWishlist = 'fb_mobile_add_to_wishlist';
-  static const String initiateCheckout = 'fb_mobile_initiated_checkout';
-
-  // Standard Facebook engagement events
-  static const String completeRegistration = 'fb_mobile_complete_registration';
-  static const String search = 'fb_mobile_search';
-  static const String viewContent = 'fb_mobile_content_view';
-  static const String rate = 'fb_mobile_rate';
-  static const String contact = 'fb_mobile_contact';
-  static const String customizeProduct = 'fb_mobile_customize_product';
-  static const String donate = 'fb_mobile_donate';
-  static const String findLocation = 'fb_mobile_find_location';
-  static const String schedule = 'fb_mobile_schedule';
-  static const String startTrial = 'fb_mobile_start_trial';
-  static const String submitApplication = 'fb_mobile_submit_application';
-  static const String subscribe = 'fb_mobile_subscribe';
-  static const String adClick = 'fb_mobile_ad_click';
-  static const String adImpression = 'fb_mobile_ad_impression';
-
-  // Achievement events
-  static const String achieveLevel = 'fb_mobile_achievement_unlocked';
-  static const String unlockAchievement = 'fb_mobile_achievement_unlocked';
-  static const String completeTutorial = 'fb_mobile_tutorial_completion';
-
-  // Common custom events (examples - create your own)
-  static const String trialStarted = 'trial_started';
-  static const String levelAchieved = 'level_achieved';
-  static const String tutorialCompleted = 'tutorial_completed';
-  static const String featureUsed = 'feature_used';
-  static const String screenViewed = 'screen_viewed';
-  static const String buttonClicked = 'button_clicked';
-  static const String formSubmitted = 'form_submitted';
-  static const String videoPlayed = 'video_played';
-  static const String fileDownloaded = 'file_downloaded';
-}
-
-/// Convenience constants for Facebook Analytics event parameters.
-///
-/// This class provides constants for standard Facebook event parameter names
-/// to prevent typos and improve developer experience with auto-completion.
-///
-/// **Content Parameters:**
-/// Used to describe content being interacted with (products, articles, etc.)
-///
-/// **Commerce Parameters:**
-/// Used for purchase and transaction tracking
-///
-/// **User Parameters:**
-/// Used for user attribution and behavior tracking
-///
-/// **Usage:**
-/// ```dart
-/// // Purchase event with parameters
-/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.purchase, {
-///   FacebookParameters.contentId: 'product_123',
-///   FacebookParameters.contentType: 'product',
-///   FacebookParameters.numItems: 2,
-///   FacebookParameters.currency: 'USD',
-///   '_valueToSum': 49.99,  // Standard Facebook parameter
-/// });
-///
-/// // Content view event
-/// await FlutterFacebookAppLinks.logEvent(FacebookEvents.viewContent, {
-///   FacebookParameters.contentId: 'article_456',
-///   FacebookParameters.contentType: 'article',
-/// });
-/// ```
-class FacebookParameters {
-  // Content identification
-  static const String contentId = 'fb_content_id';
-  static const String contentType = 'fb_content_type';
-  static const String contentCategory = 'fb_content_category';
-
-  // Commerce and quantity
-  static const String numItems = 'fb_num_items';
-  static const String currency = 'fb_currency';
-  static const String value = 'fb_value';
-
-  // User and attribution
-  static const String registrationMethod = 'fb_registration_method';
-  static const String searchString = 'fb_search_string';
-  static const String description = 'fb_description';
-
-  // Success and status
-  static const String success = 'fb_success';
-
-  // Standard Facebook parameters (commonly used)
-  static const String valueToSum = '_valueToSum';
-  static const String orderId = 'fb_order_id';
-  static const String predictedLtv = 'fb_predicted_ltv';
-
-  // App-specific parameters (commonly used)
-  static const String level = 'fb_level';
-  static const String score = 'fb_score';
-  static const String maxRatingValue = 'fb_max_rating_value';
-  static const String paymentInfoAvailable = 'fb_payment_info_available';
 }
