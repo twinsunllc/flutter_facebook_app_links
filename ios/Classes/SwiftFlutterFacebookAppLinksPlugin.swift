@@ -11,10 +11,10 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
     let instance = SwiftFlutterFacebookAppLinksPlugin()
     let channel = FlutterMethodChannel(name: "plugins.remedia.it/flutter_facebook_app_links", binaryMessenger: registrar.messenger())
-    
+
     // Get user consent
     print("FB APP LINK registering plugin")
-    
+
     instance.initializeSDK()
     
     registrar.addMethodCallDelegate(instance, channel: channel)
@@ -30,7 +30,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       Settings.shared.isAdvertiserTrackingEnabled = false
       print("FB APP LINKS: ⚠️ Advertiser tracking DISABLED by default. Call setAdvertiserTrackingEnabled(true) after ATT permission to enable Facebook attribution!")
 
-      ApplicationDelegate.shared.initializeSDK()
+      let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
+      ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptionsForFacebook)
 
       AppLinkUtility.fetchDeferredAppLink{ (url, error) in
           if let error = error{
