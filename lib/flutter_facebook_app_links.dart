@@ -331,6 +331,46 @@ class FlutterFacebookAppLinks {
       rethrow;
     }
   }
+
+  /// Forces immediate sending of all pending batched events to Facebook.
+  ///
+  /// The Facebook SDK automatically batches events for optimal performance and
+  /// network efficiency. This method forces immediate transmission of all
+  /// pending events, bypassing the normal batching delay.
+  ///
+  /// **Use Cases:**
+  /// - Critical events that must be sent immediately (e.g., purchases)
+  /// - App termination to ensure events are sent before shutdown
+  /// - Debugging to verify event transmission
+  /// - Session changes (logout/login) to send pending events
+  ///
+  /// **Performance Note:**
+  /// Frequent flushing reduces the benefits of batching. Use only when
+  /// immediate delivery is required.
+  ///
+  /// **Privacy Compliance:**
+  /// This method respects consent settings - events are only sent if
+  /// consent has been previously provided.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Log a critical purchase event
+  /// await FlutterFacebookAppLinks.logPurchaseEvent(99.99, 'USD');
+  ///
+  /// // Force immediate sending (bypasses batching)
+  /// await FlutterFacebookAppLinks.flushEvents();
+  /// ```
+  ///
+  /// Throws [PlatformException] if the platform-specific call fails
+  static Future<void> flushEvents() async {
+    try {
+      debugPrint('Flushing Facebook events (forcing immediate send)');
+      await _channel.invokeMethod('flushEvents');
+    } catch (e) {
+      debugPrint("Error flushing Facebook events: $e");
+      rethrow;
+    }
+  }
 }
 
 /// Convenience constants for Facebook Analytics event names.

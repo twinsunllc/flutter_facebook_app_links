@@ -102,6 +102,11 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       result.success(true);
     } else if (call.method.equals("logEvent")) {
       logEvent(call, result);
+    } else if (call.method.equals("flushEvents")) {
+      // Force immediate sending of all batched events
+      AppEventsLogger.flush();
+      Log.d("FB_APP_LINKS", "Flushed all pending events");
+      result.success(null);
     } else {
       result.notImplemented();
     }

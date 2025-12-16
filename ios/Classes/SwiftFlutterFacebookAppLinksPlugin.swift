@@ -129,6 +129,11 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     case "activateApp":
         AppEvents.shared.activateApp()
         result(true)
+    case "flushEvents":
+        // Force immediate sending of all batched events
+        AppEvents.flush()
+        print("FB APP LINKS: Flushed all pending events")
+        result(nil)
     default:
         result(FlutterMethodNotImplemented)
     }
