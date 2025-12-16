@@ -21,8 +21,7 @@ class FlutterFacebookAppLinks {
       return data ?? '';
     } catch (e) {
       debugPrint("Error initializing FlutterFacebookAppLinks: $e");
-
-      return '';
+      rethrow;
     }
   }
 
@@ -33,8 +32,7 @@ class FlutterFacebookAppLinks {
       return data ?? '';
     } catch (e) {
       debugPrint("Error retrieving deferred deep link: $e");
-
-      return '';
+      rethrow;
     }
   }
 
