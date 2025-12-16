@@ -253,11 +253,14 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
 
       // Log the event
       logger.logEvent(eventName, params);
-      Log.d("FB_APP_LINKS", "Logged event '" + eventName + "' with " + parameters.size() + " parameters");
+      // Safe parameter count logging to prevent null pointer exceptions
+      int paramCount = parameters != null ? parameters.size() : 0;
+      Log.d("FB_APP_LINKS", "Logged event '" + eventName + "' with " + paramCount + " parameters");
       result.success(null);
 
     } catch (Exception e) {
       // Include event name and parameter count in error message for better debugging
+      // Safe parameter count to prevent null pointer exceptions in error logging
       int paramCount = parameters != null ? parameters.size() : 0;
       result.error("EVENT_LOGGING_ERROR",
           "Failed to log event '" + eventName + "' with " + paramCount + " parameters: " + e.getMessage(),

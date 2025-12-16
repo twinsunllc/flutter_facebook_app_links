@@ -34,6 +34,7 @@
 * Added input validation for `logEvent()` (Facebook event name format requirements)
 * Added input validation for `logPurchaseEvent()` (currency format and positive amounts)
 * Added defensive null context check in Android implementation
+* **Added null pointer protection**: Safe parameter counting in Android logEvent prevents crashes from null parameter references
 * **Added event batching controls**: New `flushEvents()` method provides control over Facebook SDK event batching for performance tuning and debugging
 * **Added native-side validation**: Defense in depth validation in iOS and Android prevents invalid data from reaching Facebook SDK
 * **Fixed iOS deep link fetching**: Reverted to non-blocking cached-only approach to prevent UI freezes during app launch
