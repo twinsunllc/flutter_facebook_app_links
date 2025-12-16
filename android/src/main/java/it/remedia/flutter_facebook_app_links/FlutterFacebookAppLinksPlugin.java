@@ -245,7 +245,11 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
       result.success(null);
 
     } catch (Exception e) {
-      result.error("EVENT_LOGGING_ERROR", "Failed to log event: " + e.getMessage(), null);
+      // Include event name and parameter count in error message for better debugging
+      int paramCount = parameters != null ? parameters.size() : 0;
+      result.error("EVENT_LOGGING_ERROR",
+          "Failed to log event '" + eventName + "' with " + paramCount + " parameters: " + e.getMessage(),
+          null);
     }
   }
 }

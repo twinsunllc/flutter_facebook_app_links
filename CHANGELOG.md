@@ -39,7 +39,7 @@
 * **Optimized iOS initialization**: Removed redundant SDK initialization call for better performance
 * **Cleaned up Android initialization**: Removed unnecessary SDK initialization check for better code clarity
 * **Enhanced iOS selector dispatch logging**: Added detection logging for Objective-C selector fallback to monitor attribution reliability
-* **Enhanced error messages**: Improved consent error messages to explain Flutter hot restart behavior
+* **Enhanced error messages**: Improved event logging error messages to include event name and parameter count for better debugging
 * **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
 * **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
 * Support for standard Facebook event names and custom events

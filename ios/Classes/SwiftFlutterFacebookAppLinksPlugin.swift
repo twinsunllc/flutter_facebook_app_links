@@ -198,9 +198,18 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       }
     }
 
-    // Log the event
-    AppEvents.shared.logEvent(AppEvents.Name(rawValue: eventName), parameters: eventParameters)
-
-    result(nil)
+    do {
+        // Log the event
+        AppEvents.shared.logEvent(AppEvents.Name(rawValue: eventName), parameters: eventParameters)
+        result(nil)
+    } catch {
+        // Include event name and parameter count in error message for better debugging
+        let paramCount = eventParameters.count
+        result(FlutterError(
+            code: "EVENT_LOGGING_ERROR",
+            message: "Failed to log event '\(eventName)' with \(paramCount) parameters: \(error.localizedDescription)",
+            details: nil
+        ))
+    }
   }
 }
