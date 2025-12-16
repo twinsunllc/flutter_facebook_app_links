@@ -30,8 +30,16 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
       Settings.shared.isAdvertiserTrackingEnabled = false
       print("FB APP LINKS: ⚠️ Advertiser tracking DISABLED by default. Call setAdvertiserTrackingEnabled(true) after ATT permission to enable Facebook attribution!")
 
-      let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
-      ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptionsForFacebook)
+      // Call Facebook SDK's didFinishLaunchingWithOptions via dynamic Objective-C selector
+      // This is needed because the Swift method is gated behind Swift 6.2+ NonescapableTypes feature
+      let selector = NSSelectorFromString("application:didFinishLaunchingWithOptions:")
+      if ApplicationDelegate.shared.responds(to: selector) {
+          let launchOptionsForFacebook = launchOptions as? [UIApplication.LaunchOptionsKey: Any]
+          _ = ApplicationDelegate.shared.perform(selector, with: application, with: launchOptionsForFacebook)
+      } else {
+          // Fallback to initializeSDK if method not available
+          ApplicationDelegate.shared.initializeSDK()
+      }
 
       AppLinkUtility.fetchDeferredAppLink{ (url, error) in
           if let error = error{
