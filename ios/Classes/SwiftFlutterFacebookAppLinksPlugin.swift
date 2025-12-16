@@ -16,7 +16,7 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
     print("FB APP LINK registering plugin")
 
     instance.initializeSDK()
-    
+
     registrar.addMethodCallDelegate(instance, channel: channel)
     registrar.addApplicationDelegate(instance)
   }
@@ -68,6 +68,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
                               message: "Expected boolean 'enabled' parameter",
                               details: nil))
         }
+    case "logEvent":
+      handleLogEvent(call, result: result)
     
     // UPSTREAM FACEBOOK SDK 18 METHODS
     case "getPlatformVersion":
@@ -92,5 +94,49 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
   public func initializeSDK() {
     ApplicationDelegate.shared.initializeSDK()
+  }
+
+  private func handleLogEvent(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let eventName = arguments["eventName"] as? String,
+          !eventName.isEmpty else {
+      result(FlutterError(code: "INVALID_ARGUMENTS",
+                        message: "Event name cannot be null or empty",
+                        details: nil))
+      return
+    }
+
+    // Ensure SDK is initialized before logging events
+    ApplicationDelegate.shared.initializeSDK()
+
+    // Get parameters dictionary (can be nil/empty)
+    let parameters = arguments["parameters"] as? [String: Any] ?? [:]
+
+    // Convert parameters to proper types for AppEvents
+    var eventParameters: [AppEvents.ParameterName: Any] = [:]
+
+    for (key, value) in parameters {
+      // Create custom parameter name from the key string
+      let parameterName = AppEvents.ParameterName(rawValue: key)
+
+      // Check specific types first to avoid NSNumber overlap
+      if let stringValue = value as? String {
+        eventParameters[parameterName] = stringValue
+      } else if let intValue = value as? Int {
+        eventParameters[parameterName] = intValue
+      } else if let doubleValue = value as? Double {
+        eventParameters[parameterName] = doubleValue
+      } else if let boolValue = value as? Bool {
+        eventParameters[parameterName] = boolValue
+      } else {
+        // Fallback for unexpected types
+        eventParameters[parameterName] = String(describing: value)
+      }
+    }
+
+    // Log the event
+    AppEvents.shared.logEvent(AppEvents.Name(rawValue: eventName), parameters: eventParameters)
+
+    result(nil)
   }
 }

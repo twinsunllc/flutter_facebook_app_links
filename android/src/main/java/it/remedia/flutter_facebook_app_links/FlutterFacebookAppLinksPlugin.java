@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 
 import com.facebook.applinks.AppLinkData;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
+import android.os.Bundle;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +98,8 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
     } else if(call.method.equals("activateApp")){
       activateSDK();
       result.success(true);
+    } else if (call.method.equals("logEvent")) {
+      logEvent(call, result);
     } else {
       result.notImplemented();
     }
@@ -175,5 +180,62 @@ public class FlutterFacebookAppLinksPlugin implements FlutterPlugin, MethodCallH
         }
       }
     );
+  }
+
+  private void logEvent(MethodCall call, Result result) {
+    // Defensive check for null context
+    if (mContext == null) {
+      result.error("CONTEXT_NULL", "Plugin context is not initialized", null);
+      return;
+    }
+
+    try {
+      // Ensure SDK is initialized before logging events
+      if (!FacebookSdk.isInitialized()) {
+        FacebookSdk.fullyInitialize();
+      }
+
+      String eventName = call.argument("eventName");
+      Map<String, Object> parameters = call.argument("parameters");
+
+      if (eventName == null || eventName.isEmpty()) {
+        result.error("INVALID_ARGUMENTS", "Event name cannot be null or empty", null);
+        return;
+      }
+
+      // Create AppEventsLogger instance
+      AppEventsLogger logger = AppEventsLogger.newLogger(mContext);
+
+      // Convert parameters to Bundle
+      Bundle params = new Bundle();
+      if (parameters != null && !parameters.isEmpty()) {
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+          String key = entry.getKey();
+          Object value = entry.getValue();
+
+          if (value instanceof String) {
+            params.putString(key, (String) value);
+          } else if (value instanceof Integer) {
+            params.putInt(key, (Integer) value);
+          } else if (value instanceof Double) {
+            params.putDouble(key, (Double) value);
+          } else if (value instanceof Long) {
+            params.putLong(key, (Long) value);
+          } else if (value instanceof Boolean) {
+            params.putBoolean(key, (Boolean) value);
+          } else if (value != null) {
+            // Fallback: convert to string
+            params.putString(key, value.toString());
+          }
+        }
+      }
+
+      // Log the event
+      logger.logEvent(eventName, params);
+      result.success(null);
+
+    } catch (Exception e) {
+      result.error("EVENT_LOGGING_ERROR", "Failed to log event: " + e.getMessage(), null);
+    }
   }
 }

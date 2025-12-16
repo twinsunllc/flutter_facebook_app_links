@@ -25,6 +25,22 @@
 * Added unit tests for new `setAdvertiserTrackingEnabled()` method with error handling
 * Android: Updated to Facebook SDK 18.1.3, MinSDK 21, CompileSDK 35
 * Modernized plugin configuration with explicit platform declarations
+* Added Facebook event logging functionality for analytics and conversion tracking
+* New `logEvent()` method to log custom events with parameters
+* New `logPurchaseEvent()` convenience method for tracking purchases with amount and currency
+* New `logCompleteRegistration()` convenience method for tracking user registrations
+* New `FacebookEvents` class with constants for standard Facebook event names
+* New `FacebookParameters` class with constants for standard Facebook parameter names
+* Added input validation for `logEvent()` (Facebook event name format requirements)
+* Added input validation for `logPurchaseEvent()` (currency format and positive amounts)
+* Added defensive null context check in Android implementation
+* **Privacy Compliance Enforcement**: Event logging now requires explicit user consent via `consentProvided()`
+* **Consistent Error Handling**: All methods now rethrow exceptions for predictable API behavior
+* Support for standard Facebook event names and custom events
+* Full parameter support for event metadata (content IDs, values, currencies, etc.)
+* **iOS**: Event logging using `AppEvents.shared.logEvent()` from FBSDKCoreKit
+* **Android**: Event logging using `AppEventsLogger` from Facebook SDK
+* Events require prior SDK initialization via `consentProvided()` for privacy compliance
 
 ## 3.1.0
 * Android: MinSDK 21, CompileSDK 35

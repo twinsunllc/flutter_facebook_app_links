@@ -154,7 +154,178 @@ Read through the "[Getting Started with App Events for iOS](https://developers.f
 
 - After obtaining ATT permission, follow the same pattern as Android above: call `FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true/false)` based on user consent, then call `FlutterFacebookAppLinks.consentProvided()` or `consentRevoked()`.
 
-## How to use
+## Facebook Analytics Event Logging
+
+This plugin includes comprehensive Facebook Analytics event logging capabilities, allowing you to track user behavior, conversions, and app performance metrics directly in your Flutter app.
+
+### ⚠️ Privacy Compliance Required
+
+**Important**: Event logging requires explicit user consent for privacy compliance (GDPR, CCPA, ATT). Always obtain user consent before logging events.
+
+```dart
+import 'dart:io' show Platform;
+import 'package:flutter_facebook_app_links/flutter_facebook_app_links.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+
+// Initialize Facebook SDK with proper consent
+Future<void> initializeFacebookSDK() async {
+  if (Platform.isIOS) {
+    // Request ATT permission first
+    var status = await AppTrackingTransparency.requestTrackingAuthorization();
+    var trackingEnabled = status == TrackingStatus.authorized;
+
+    // Set advertiser tracking based on consent
+    await FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(trackingEnabled);
+
+    // Provide consent to enable event logging
+    await FlutterFacebookAppLinks.consentProvided();
+  } else {
+    // Android: Enable tracking and provide consent
+    await FlutterFacebookAppLinks.setAdvertiserTrackingEnabled(true);
+    await FlutterFacebookAppLinks.consentProvided();
+  }
+
+  // Now event logging is allowed
+}
+```
+
+### Logging Custom Events
+
+Track any user action or app event:
+
+```dart
+// Simple event
+await FlutterFacebookAppLinks.logEvent('trial_started');
+
+// Event with parameters
+await FlutterFacebookAppLinks.logEvent('feature_used', {
+  'feature_name': 'premium_filter',
+  'user_type': 'pro',
+  'session_duration': 300
+});
+```
+
+### Logging Purchase Events
+
+Track revenue and purchase conversions:
+
+```dart
+// Log purchases with currency and amount
+await FlutterFacebookAppLinks.logPurchaseEvent(
+  49.99,
+  'USD',
+  {
+    'fb_content_id': 'product_12345',
+    'fb_content_type': 'product',
+    'fb_num_items': 2,
+    'fb_content_category': 'electronics'
+  }
+);
+```
+
+### Logging Registration Events
+
+Track user acquisition:
+
+```dart
+// Log user registrations
+await FlutterFacebookAppLinks.logCompleteRegistration('email');
+await FlutterFacebookAppLinks.logCompleteRegistration('facebook');
+```
+
+### Using Facebook Standard Events
+
+Use predefined constants to avoid typos and ensure proper event naming:
+
+```dart
+// Standard commerce events
+await FlutterFacebookAppLinks.logEvent(FacebookEvents.purchase, {
+  FacebookParameters.contentId: 'product_123',
+  FacebookParameters.contentType: 'product',
+  FacebookParameters.currency: 'USD',
+  '_valueToSum': 29.99,  // Standard Facebook parameter
+});
+
+await FlutterFacebookAppLinks.logEvent(FacebookEvents.addToCart, {
+  FacebookParameters.contentId: 'product_456',
+  FacebookParameters.contentType: 'product',
+  FacebookParameters.numItems: 1
+});
+
+// Standard engagement events
+await FlutterFacebookAppLinks.logEvent(FacebookEvents.completeRegistration, {
+  FacebookParameters.registrationMethod: 'email'
+});
+
+await FlutterFacebookAppLinks.logEvent(FacebookEvents.viewContent, {
+  FacebookParameters.contentId: 'article_789',
+  FacebookParameters.contentType: 'article'
+});
+```
+
+### Available Facebook Standard Events
+
+The `FacebookEvents` class provides constants for all major Facebook events:
+
+**Commerce Events:**
+- `FacebookEvents.purchase` - Track revenue
+- `FacebookEvents.addToCart` - Add to cart actions
+- `FacebookEvents.addToWishlist` - Wishlist additions
+- `FacebookEvents.initiateCheckout` - Checkout starts
+
+**Engagement Events:**
+- `FacebookEvents.completeRegistration` - User signups
+- `FacebookEvents.viewContent` - Content views
+- `FacebookEvents.search` - Search actions
+- `FacebookEvents.contact` - Contact form submissions
+
+**Achievement Events:**
+- `FacebookEvents.completeTutorial` - Tutorial completion
+- `FacebookEvents.achieveLevel` - Level progression
+
+**Custom Events:**
+- `FacebookEvents.trialStarted` - Trial initiations
+- `FacebookEvents.featureUsed` - Feature usage
+- `FacebookEvents.screenViewed` - Screen tracking
+
+### Using Facebook Parameter Constants
+
+The `FacebookParameters` class provides constants for standard Facebook parameter names to prevent typos:
+
+**Content Parameters:**
+- `FacebookParameters.contentId` - Content identifier (`fb_content_id`)
+- `FacebookParameters.contentType` - Content type/category (`fb_content_type`)
+- `FacebookParameters.contentCategory` - Content category (`fb_content_category`)
+
+**Commerce Parameters:**
+- `FacebookParameters.numItems` - Number of items (`fb_num_items`)
+- `FacebookParameters.currency` - Currency code (`fb_currency`)
+- `FacebookParameters.value` - Monetary value (`fb_value`)
+
+**User Parameters:**
+- `FacebookParameters.registrationMethod` - Registration method (`fb_registration_method`)
+- `FacebookParameters.searchString` - Search query (`fb_search_string`)
+- `FacebookParameters.description` - Description (`fb_description`)
+
+### Event Validation
+
+The plugin includes comprehensive validation:
+
+- **Event Names**: 1-40 characters, alphanumeric + underscores only
+- **Currencies**: Must be valid 3-letter ISO codes (USD, EUR, GBP, etc.)
+- **Amounts**: Must be >= 0 for purchases
+- **Consent**: Events require prior consent via `consentProvided()`
+
+Invalid inputs throw `ArgumentError` or `StateError` with clear messages.
+
+### Facebook Analytics Reference
+
+For complete event specifications and best practices:
+- [Facebook Analytics Events Reference](https://developers.facebook.com/docs/facebook-pixel/reference)
+- [App Events Best Practices](https://developers.facebook.com/docs/app-events/best-practices/)
+- [Facebook Analytics Help Center](https://developers.facebook.com/docs/analytics/)
+
+## Facebook App Links Usage
 ```dart
 import 'dart:io' show Platform;
 ...

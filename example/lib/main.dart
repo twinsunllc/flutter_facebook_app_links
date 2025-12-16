@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   String _deepLinkStatus = 'Waiting for deep link...';
   String _consentStatus = 'Not initialized';
   String _trackingStatus = 'Unknown';
+  String _eventLoggingStatus = 'No events logged yet';
 
   @override
   void initState() {
@@ -137,6 +138,141 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> logCustomEvent() async {
+    try {
+      // Log a custom event with parameters using FacebookEvents constants
+      await FlutterFacebookAppLinks.logEvent(FacebookEvents.trialStarted, {
+        'trial_type': 'premium',
+        'trial_duration': 7,
+        '_valueToSum': 9.99,
+        'fb_currency': 'USD',
+      });
+
+      setState(() {
+        _eventLoggingStatus = 'Custom event logged: ${FacebookEvents.trialStarted} with parameters';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging custom event: $e';
+      });
+    }
+  }
+
+  Future<void> logPurchase() async {
+    try {
+      // Log a purchase event
+      await FlutterFacebookAppLinks.logPurchaseEvent(
+        49.99,
+        'USD',
+        {
+          'fb_content_id': 'product_12345',
+          'fb_content_type': 'product',
+          'fb_num_items': 2,
+        },
+      );
+
+      setState(() {
+        _eventLoggingStatus = 'Purchase event logged: \$49.99 USD';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging purchase: $e';
+      });
+    }
+  }
+
+  Future<void> logRegistration() async {
+    try {
+      // Log a registration completion event
+      await FlutterFacebookAppLinks.logCompleteRegistration('email');
+
+      setState(() {
+        _eventLoggingStatus = 'Registration event logged with method: email';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = 'Error logging registration: $e';
+      });
+    }
+  }
+
+  // ERROR SCENARIO DEMONSTRATIONS
+  Future<void> tryEventWithoutConsent() async {
+    try {
+      // Try to log event without consent - should fail
+      await FlutterFacebookAppLinks.logEvent('test_event');
+
+      setState(() {
+        _eventLoggingStatus = '❌ ERROR: Event logged without consent (this should not happen!)';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = '✅ EXPECTED: $e';
+      });
+    }
+  }
+
+  Future<void> tryInvalidEventName() async {
+    try {
+      // Try invalid event name with spaces - should fail
+      await FlutterFacebookAppLinks.logEvent('event with spaces');
+
+      setState(() {
+        _eventLoggingStatus = '❌ ERROR: Invalid event name accepted (this should not happen!)';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = '✅ EXPECTED: $e';
+      });
+    }
+  }
+
+  Future<void> tryInvalidCurrency() async {
+    try {
+      // Try invalid currency - should fail
+      await FlutterFacebookAppLinks.logPurchaseEvent(49.99, 'INVALID');
+
+      setState(() {
+        _eventLoggingStatus = '❌ ERROR: Invalid currency accepted (this should not happen!)';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = '✅ EXPECTED: $e';
+      });
+    }
+  }
+
+  Future<void> tryNegativePurchase() async {
+    try {
+      // Try negative purchase amount - should fail
+      await FlutterFacebookAppLinks.logPurchaseEvent(-10.0, 'USD');
+
+      setState(() {
+        _eventLoggingStatus = '❌ ERROR: Negative purchase accepted (this should not happen!)';
+      });
+    } catch (e) {
+      setState(() {
+        _eventLoggingStatus = '✅ EXPECTED: $e';
+      });
+    }
+  }
+
+  Future<void> revokeConsent() async {
+    try {
+      // Revoke consent to demonstrate enforcement
+      await FlutterFacebookAppLinks.consentRevoked();
+
+      setState(() {
+        _consentStatus = 'Consent REVOKED - Event logging will now fail';
+        _eventLoggingStatus = 'Consent revoked - try logging events now';
+      });
+    } catch (e) {
+      setState(() {
+        _consentStatus = 'Error revoking consent: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -172,7 +308,21 @@ class _MyAppState extends State<MyApp> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(_deepLinkStatus),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
+                Divider(),
+                SizedBox(height: 20),
+                Text(
+                  'Event Logging:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(height: 10),
+                Text(_eventLoggingStatus),
+                SizedBox(height: 20),
+                Text(
+                  'Setup & Configuration:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: requestTrackingConsent,
                   child: Text('Request ATT & Initialize Facebook'),
@@ -188,6 +338,80 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Refresh Deep Link Data'),
                 ),
                 SizedBox(height: 20),
+                Text(
+                  'Event Logging Examples:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logCustomEvent,
+                  child: Text('Log Custom Event (${FacebookEvents.trialStarted})'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logPurchase,
+                  child: Text('Log Purchase Event (\$49.99)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: logRegistration,
+                  child: Text('Log Registration Event'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Error Scenario Demonstrations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: revokeConsent,
+                  child: Text('Revoke Consent (Disable Event Logging)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: tryEventWithoutConsent,
+                  child: Text('Try Event Without Consent'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: tryInvalidEventName,
+                  child: Text('Try Invalid Event Name'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: tryInvalidCurrency,
+                  child: Text('Try Invalid Currency'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: tryNegativePurchase,
+                  child: Text('Try Negative Purchase Amount'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -199,7 +423,18 @@ class _MyAppState extends State<MyApp> {
                     '• On iOS: Button triggers ATT permission → sets advertiser tracking → initializes SDK\n'
                     '• On Android: Button enables tracking → initializes SDK\n'
                     '• Deep link data may take a few seconds to load\n'
-                    '• Toggle button demonstrates changing tracking status after initialization',
+                    '• Toggle button demonstrates changing tracking status after initialization\n\n'
+                    'Event Logging:\n'
+                    '• Initialize Facebook SDK first (Request ATT button)\n'
+                    '• Green buttons demonstrate successful event logging\n'
+                    '• Orange button revokes consent to show enforcement\n'
+                    '• Red buttons demonstrate validation errors (expected to fail)\n'
+                    '• Events are sent to Facebook Analytics when consent is provided\n'
+                    '• Check Facebook Events Manager to verify successful events\n\n'
+                    'Error Scenarios (Red Buttons):\n'
+                    '• Show expected validation failures with clear error messages\n'
+                    '• Demonstrate consent enforcement and parameter validation\n'
+                    '• Help developers understand proper error handling patterns',
                     style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                   ),
                 ),
